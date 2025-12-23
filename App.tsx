@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useScroll, useSpring, useTransform, useMotionValue } from 'framer-motion';
 import { 
@@ -28,9 +27,13 @@ import {
   Eye,
   FileCode,
   Maximize2,
-  MousePointer2
+  MousePointer2,
+  ExternalLink,
+  ShieldCheck,
+  Zap
 } from 'lucide-react';
-import { GoogleGenAI, Type } from "@google/genai";
+// ייבוא הספרייה הרשמית של גוגל
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { translations } from './translations';
 import { Language, Project } from './types';
 
@@ -42,34 +45,34 @@ const projects: ExtendedProject[] = [
   {
     id: 'helevhitim',
     title: 'מוסדות חלב חיטים',
-    description: 'מערכת ניהול מורכבת ופורטל ארגוני חדשני המרכז את כלל פעילות המוסד.',
+    description: 'מערכת ניהול מורכבת ופורטל ארגוני חדשני המרכז את כלל פעילות המוסד, כולל מערכות גבייה וניהול תלמידים מתקדמות.',
     imageUrl: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=1200',
     link: 'https://www.helevhitim.com/',
-    tags: ['Software', 'Enterprise']
+    tags: ['Software', 'Enterprise', 'Management']
   },
   {
     id: 'jennyskallot',
     title: 'ג׳ני שמלות כלה',
-    description: 'אתר בוטיק יוקרתי המציג קולקציות שמלות כלה בתצוגה ויזואלית עוצרת נשימה וחווית משתמש פרימיום.',
+    description: 'אתר בוטיק יוקרתי המציג קולקציות שמלות כלה בתצוגה ויזואלית עוצרת נשימה, חווית משתמש פרימיום ומערכת קביעת תורים.',
     imageUrl: 'https://images.unsplash.com/photo-1596433809252-260c2745dfdd?auto=format&fit=crop&q=80&w=1200',
     link: 'https://jennyskallot.com/',
-    tags: ['Luxury E-comm', 'Fashion']
+    tags: ['Luxury E-comm', 'Fashion', 'UX/UI']
   },
   {
     id: 'lichvoda',
     title: 'סטודיו לכבודה',
-    description: 'אתר תדמית יוקרתי לסטודיו לאומנויות הבמה המשלב תנועה ואסתטיקה.',
+    description: 'אתר תדמית יוקרתי לסטודיו לאומנויות הבמה המשלב תנועה ואסתטיקה גבוהה עם גלריות וידאו אינטראקטיביות.',
     imageUrl: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=1200',
     link: 'https://lichvoda.co.il/',
-    tags: ['Portfolio', 'Design']
+    tags: ['Portfolio', 'Design', 'Art']
   },
   {
     id: 'liveraise',
     title: 'LiveRaise Production',
-    description: 'מערכת מסכי רתימה דינמית לגיוס המונים בזמן אמת עם גרפיקה חיה.',
+    description: 'מערכת מסכי רתימה דינמית לגיוס המונים בזמן אמת עם גרפיקה חיה המחוברת למסדי נתונים חיצוניים.',
     imageUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=1200',
     link: 'https://liveraise-production.up.railway.app/',
-    tags: ['Real-time', 'Fundraising']
+    tags: ['Real-time', 'Fundraising', 'Analytics']
   }
 ];
 
@@ -102,11 +105,11 @@ const placeholders = {
 
 const AtmosphericBackground = () => {
   const { scrollYProgress } = useScroll();
-  const yTranslate = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
+  const yTranslate = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
   
   return (
     <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden bg-[#020202]">
-      <motion.div style={{ y: yTranslate }} className="absolute inset-0 opacity-10">
+      <motion.div style={{ y: yTranslate }} className="absolute inset-0 opacity-15">
         <img 
           src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=2000" 
           className="w-full h-full object-cover grayscale brightness-50"
@@ -120,8 +123,8 @@ const AtmosphericBackground = () => {
           y: [0, -80, 80, 0],
           scale: [1, 1.4, 0.8, 1]
         }}
-        transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
-        className="glow-spot w-[600px] h-[600px] bg-[#c5a059] top-[-10%] left-[-10%] opacity-20"
+        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+        className="glow-spot w-[600px] h-[600px] bg-[#c5a059] top-[-10%] left-[-10%] opacity-20 blur-[120px]"
       />
       <motion.div 
         animate={{ 
@@ -130,7 +133,7 @@ const AtmosphericBackground = () => {
           scale: [1, 0.7, 1.5, 1]
         }}
         transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-        className="glow-spot w-[500px] h-[500px] bg-[#0ea5e9] bottom-[-10%] right-[-10%] opacity-20"
+        className="glow-spot w-[500px] h-[500px] bg-[#0ea5e9] bottom-[-10%] right-[-10%] opacity-20 blur-[100px]"
       />
     </div>
   );
@@ -174,7 +177,7 @@ const App: React.FC = () => {
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
   
-  // Contact Form States
+  // Form State
   const [contactName, setContactName] = useState('');
   const [contactPhone, setContactPhone] = useState('');
   const [contactMessage, setContactMessage] = useState('');
@@ -184,7 +187,7 @@ const App: React.FC = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setPlaceholderIndex((prev) => (prev + 1) % placeholders[lang].length);
-    }, 6000);
+    }, 8000);
     return () => clearInterval(interval);
   }, [lang]);
 
@@ -211,39 +214,51 @@ const App: React.FC = () => {
     setAiResponse(null);
 
     try {
-      const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-      const prompt = `You are the Lead Creative Architect at DA Group. 
-      The user has this specific vision: "${aiInput}".
+      const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+      const genAI = new GoogleGenerativeAI(apiKey);
       
-      STRICT GUIDELINES:
-      1. Focus solely on characterizing the user's actual idea. Use professional business language.
-      2. Write a professional, punchy characterization in ${lang === 'he' ? 'Hebrew' : 'English'}.
-      3. Generate a LUXURY, MINIMAL, MOBILE-RESPONSIVE HTML landing page (single file).
-      4. The HTML MUST include a script or CSS that performs a slow, constant automatic vertical scroll from top to bottom and repeats, to showcase the design.
-      5. Design aesthetic: Dark (#020202), Gold accents (#c5a059), high-end serif typography.
+      // שימוש במודל Gemini 3 Pro Preview החזק ביותר
+      const model = genAI.getGenerativeModel({ model: "gemini-3-pro-preview" });
+
+      const prompt = `You are the Master Creative Strategist and Lead Software Architect at DA Group. 
+      The user vision is: "${aiInput}".
       
-      Output ONLY a JSON object with keys: "characterization" and "htmlPreview".`;
+      YOUR TASKS:
+      1. EXPANSION: Analyze this vision and expand it into a high-level technical and business blueprint.
+      2. CHARACTERIZATION (HEBREW): Write a very detailed, professional characterization in Hebrew. Include: Overview, Unique Selling Points, UX/UI Strategy, Technical Architecture, and a 3-Phase Roadmap.
+      3. LUXURY HTML PREVIEW: Generate a full, professional, ultra-luxury landing page (single file).
+         - STYLING: Use Tailwind CSS (via CDN). Pure Black background (#020202), Gold text/accents (#c5a059).
+         - COMPONENTS: Header, Hero with animated text, dynamic 3-column Feature Grid, "The Process" section, and a minimalist footer.
+         - THE MAGIC: Mandatory JavaScript snippet for infinite vertical auto-scroll. The script must smoothly scroll to the bottom, then snap back to top and loop instantly.
+      
+      Output ONLY a valid JSON object:
+      {
+        "characterization": "Detailed Hebrew characterization...",
+        "htmlPreview": "<!DOCTYPE html><html>...</html>"
+      }
+      Strictly NO markdown blocks. Raw JSON only.`;
 
-      const response = await ai.models.generateContent({
-        model: 'gemini-3-flash-preview',
-        contents: prompt,
-        config: {
-          responseMimeType: "application/json",
-          responseSchema: {
-            type: Type.OBJECT,
-            properties: {
-              characterization: { type: Type.STRING },
-              htmlPreview: { type: Type.STRING }
-            },
-            required: ["characterization", "htmlPreview"]
-          }
-        }
-      });
-
-      const result = JSON.parse(response.text);
-      setAiResponse(result);
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      let text = response.text();
+      
+      // ניקוי אגרסיבי של תגיות קוד
+      text = text.replace(/```json/g, '').replace(/```/g, '').trim();
+      
+      const parsedResult = JSON.parse(text);
+      setAiResponse(parsedResult);
     } catch (error) {
       console.error("Blueprint Engine Error:", error);
+      // Fallback 
+      try {
+        const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
+        const fallbackModel = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+        const res = await fallbackModel.generateContent(aiInput);
+        const txt = res.response.text().replace(/```json/g, '').replace(/```/g, '').trim();
+        setAiResponse(JSON.parse(txt));
+      } catch (e) {
+         alert("המערכת עמוסה. נסה שוב בעוד מספר שניות.");
+      }
     } finally {
       setIsAiLoading(false);
     }
@@ -251,128 +266,157 @@ const App: React.FC = () => {
 
   const submitToExperts = () => {
     if (!aiResponse) return;
-    const blueprintHeader = lang === 'he' ? '--- אפיון חזון עסקי ---' : '--- Strategic Vision Blueprint ---';
-    setContactMessage(`${blueprintHeader}\n\n${aiResponse.characterization}\n\n${lang === 'he' ? 'נשלח מהמעבדה האסטרטגית של DA Group' : 'Sent from DA Group Strategic Lab'}`);
-    const element = document.getElementById('contact');
-    if (element) element.scrollIntoView({ behavior: 'smooth' });
+    const header = lang === 'he' ? '--- אפיון אסטרטגי מלא - DA Group ---' : '--- Strategic Blueprint - DA Group ---';
+    setContactMessage(`${header}\n\n${aiResponse.characterization}\n\nנשלח מ-Blueprint Engine של DA Group`);
+    document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
   };
 
   const handleFinalSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    const whatsappNumber = '972556674329';
-    const introText = lang === 'he' ? 'שלום DA Group, התקבלה פנייה חדשה מהאתר:' : 'Hello DA Group, a new inquiry from the website:';
-    
-    const messageBody = `
-${introText}
----------------------------------
-*${t.contact.name}:* ${contactName}
-*${t.contact.phone}:* ${contactPhone}
-*${t.contact.message}:*
-${contactMessage}
----------------------------------
-    `.trim();
-
-    const encodedMessage = encodeURIComponent(messageBody);
-    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
-    
+    const whatsappUrl = `https://wa.me/972556674329?text=${encodeURIComponent(`*פנייה חדשה מאתר DA Group*\n\n*שם:* ${contactName}\n*טלפון:* ${contactPhone}\n*תוכן:* ${contactMessage}`)}`;
     window.open(whatsappUrl, '_blank');
     setIsFormSubmitted(true);
   };
 
   return (
-    <div className="min-h-screen text-[#f5f5f7] antialiased overflow-x-hidden">
+    <div className="min-h-screen text-[#f5f5f7] antialiased overflow-x-hidden selection:bg-[#c5a059] selection:text-black">
       <CustomCursor />
       <AtmosphericBackground />
       
-      {/* Background Floating Elements Layer */}
+      {/* Background Floating Typography Layers */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-         <motion.div 
-            animate={{ y: [0, -30, 0], rotate: [0, 10, 0] }}
-            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute top-[20%] left-[5%] opacity-20 md:opacity-30"
-         >
-            <div className="w-20 h-20 border border-[#c5a059] rounded-full" />
-         </motion.div>
-         <motion.div 
-            animate={{ y: [0, 40, 0], rotate: [0, -15, 0] }}
-            transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute top-[60%] right-[10%] opacity-15 md:opacity-25"
-         >
-            <div className="w-32 h-32 border border-[#c5a059] rounded-tl-[3rem] rounded-br-[3rem]" />
-         </motion.div>
-         {/* Vertical Text Marquee (Slow Scroll) */}
-         <div className="absolute right-[-2vw] top-0 bottom-0 flex flex-col items-center justify-around opacity-5 select-none font-black text-[10vh] md:text-[15vh] uppercase serif-display italic leading-none pointer-events-none">
+         {/* Right Side Text Track */}
+         <div className="absolute right-[-3vw] top-0 bottom-0 flex flex-col items-center justify-around opacity-[0.03] select-none font-black text-[12vh] md:text-[18vh] uppercase serif-display italic leading-none pointer-events-none">
             <motion.div 
-              animate={{ y: [0, -500] }}
-              transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
-              className="flex flex-col gap-20"
+              animate={{ y: [0, -1000] }}
+              transition={{ duration: 50, repeat: Infinity, ease: "linear" }}
+              className="flex flex-col gap-32"
             >
               <span className="gold-gradient-text transform rotate-90">EXCELLENCE</span>
+              <span className="gold-gradient-text transform rotate-90">STRATEGY</span>
               <span className="gold-gradient-text transform rotate-90">INNOVATION</span>
               <span className="gold-gradient-text transform rotate-90">DA GROUP</span>
-              <span className="gold-gradient-text transform rotate-90">STRATEGY</span>
               <span className="gold-gradient-text transform rotate-90">EXCELLENCE</span>
+              <span className="gold-gradient-text transform rotate-90">STRATEGY</span>
+            </motion.div>
+         </div>
+         {/* Left Side Text Track */}
+         <div className="absolute left-[-3vw] top-0 bottom-0 flex flex-col items-center justify-around opacity-[0.03] select-none font-black text-[12vh] md:text-[18vh] uppercase serif-display italic leading-none pointer-events-none">
+            <motion.div 
+              animate={{ y: [-1000, 0] }}
+              transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
+              className="flex flex-col gap-32"
+            >
+              <span className="gold-gradient-text transform -rotate-90">ENTREPRENEURSHIP</span>
+              <span className="gold-gradient-text transform -rotate-90">PREMIUM</span>
+              <span className="gold-gradient-text transform -rotate-90">DIGITAL ELITE</span>
+              <span className="gold-gradient-text transform -rotate-90">LUXURY</span>
+              <span className="gold-gradient-text transform -rotate-90">ENTREPRENEURSHIP</span>
+              <span className="gold-gradient-text transform -rotate-90">PREMIUM</span>
             </motion.div>
          </div>
       </div>
 
-      <nav className="fixed top-0 w-full z-[90] h-16 md:h-20 flex items-center border-b border-white/10 bg-black/90 backdrop-blur-3xl shadow-2xl">
-        <div className="max-w-7xl mx-auto px-6 md:px-10 w-full flex items-center justify-between">
+      {/* Modern Fixed Navbar */}
+      <nav className="fixed top-0 w-full z-[90] h-16 md:h-24 flex items-center border-b border-white/5 bg-black/80 backdrop-blur-2xl shadow-2xl">
+        <div className="max-w-[1400px] mx-auto px-6 md:px-12 w-full flex items-center justify-between">
           <motion.div 
-            initial={{ opacity: 0, x: -20 }} 
+            initial={{ opacity: 0, x: -30 }} 
             animate={{ opacity: 1, x: 0 }}
-            className="flex items-center gap-3 cursor-pointer group"
+            className="flex items-center gap-4 cursor-pointer group"
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           >
-            <div className="w-8 h-8 md:w-11 md:h-11 bg-gradient-to-br from-[#c5a059] to-[#8a6d3b] rounded-lg flex items-center justify-center font-black text-white text-base md:text-xl">DA</div>
-            <div className="flex flex-col leading-none">
-              <span className="text-[10px] md:text-sm font-black tracking-widest block serif-display uppercase text-white">DA GROUP</span>
-              <span className="text-[7px] md:text-[9px] text-[#c5a059] tracking-[0.6em] font-bold uppercase italic">Digital Elite</span>
+            <div className="w-10 h-10 md:w-14 md:h-14 bg-gradient-to-br from-[#c5a059] to-[#8a6d3b] rounded-xl flex items-center justify-center font-black text-white text-xl md:text-2xl shadow-[0_0_30px_rgba(197,160,89,0.3)] group-hover:scale-105 transition-transform duration-500">DA</div>
+            <div className="flex flex-col leading-tight">
+              <span className="text-xs md:text-lg font-black tracking-[0.2em] block serif-display uppercase text-white group-hover:text-[#c5a059] transition-colors">DA GROUP</span>
+              <span className="text-[7px] md:text-[10px] text-[#c5a059] tracking-[0.5em] font-bold uppercase italic opacity-80">Strategic Ventures</span>
             </div>
           </motion.div>
 
-          <div className="hidden lg:flex items-center gap-10">
+          <div className="hidden lg:flex items-center gap-12">
             {['services', 'portfolio', 'contact'].map((id) => (
               <a 
                 key={id} 
                 href={`#${id}`} 
                 onClick={(e) => handleNavClick(e, id)}
-                className="text-[10px] md:text-xs font-bold tracking-[0.2em] text-zinc-100 uppercase hover:text-[#c5a059] transition-all"
+                className="text-[10px] md:text-xs font-bold tracking-[0.3em] text-zinc-300 uppercase hover:text-[#c5a059] transition-all relative group"
               >
                 {t.nav[id]}
+                <span className="absolute -bottom-2 left-0 w-0 h-[2px] bg-[#c5a059] transition-all duration-500 group-hover:w-full" />
               </a>
             ))}
             <button 
               onClick={() => setLang(l => l === 'he' ? 'en' : 'he')}
-              className="px-4 py-1.5 border border-[#c5a059]/40 rounded-full text-[9px] md:text-[11px] font-black text-[#c5a059] hover:bg-[#c5a059] hover:text-white transition-all bg-black/40"
+              className="px-6 py-2 border border-[#c5a059]/30 rounded-full text-[10px] font-black text-[#c5a059] hover:bg-[#c5a059] hover:text-black transition-all duration-500 bg-black/40 backdrop-blur-md"
             >
               {lang === 'he' ? 'ENGLISH' : 'עברית'}
             </button>
           </div>
+
+          <div className="lg:hidden flex items-center gap-4">
+             <button onClick={() => setLang(l => l === 'he' ? 'en' : 'he')} className="text-[#c5a059] text-[10px] font-black">{lang === 'he' ? 'EN' : 'עב'}</button>
+             <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-white p-2">
+                {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
+             </button>
+          </div>
         </div>
       </nav>
 
-      <section id="home" className="relative min-h-screen flex flex-col items-center justify-center pt-24 pb-12 overflow-hidden hero-grid">
-        <div className="max-w-5xl mx-auto px-6 w-full relative z-10 text-center">
+      {/* Mobile Sidebar Menu */}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div 
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+            className="fixed inset-y-0 right-0 w-[80%] z-[100] bg-black/95 backdrop-blur-3xl border-l border-white/10 flex flex-col p-12 lg:hidden shadow-[-20px_0_50px_rgba(0,0,0,0.5)]"
+          >
+            <div className="flex justify-end mb-20">
+               <button onClick={() => setIsMenuOpen(false)} className="text-[#c5a059]"><X size={36} /></button>
+            </div>
+            <div className="flex flex-col gap-12">
+               {['services', 'portfolio', 'contact'].map((id) => (
+                 <a 
+                   key={id} 
+                   href={`#${id}`} 
+                   onClick={(e) => handleNavClick(e, id)}
+                   className="text-4xl font-black tracking-tighter text-white uppercase serif-display italic hover:text-[#c5a059] transition-colors"
+                 >
+                   {t.nav[id]}
+                 </a>
+               ))}
+            </div>
+            <div className="mt-auto pt-10 border-t border-white/10">
+               <p className="text-[#c5a059] text-[10px] font-bold tracking-[0.4em] uppercase mb-4">DA Group Private Client</p>
+               <p className="text-zinc-500 text-sm italic">Elite Digital Assets & Architecture.</p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Hero & Blueprint Section */}
+      <section id="home" className="relative min-h-screen flex flex-col items-center justify-center pt-32 pb-20 overflow-hidden">
+        <div className="max-w-[1200px] mx-auto px-6 w-full relative z-10 text-center">
           <motion.div 
             initial={{ opacity: 0, y: 20 }} 
             animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2.5 px-4 py-1.5 bg-white/[0.04] border border-white/10 rounded-full mb-8 backdrop-blur-xl"
+            className="inline-flex items-center gap-3 px-6 py-2 bg-white/[0.03] border border-white/10 rounded-full mb-12 backdrop-blur-xl shadow-inner"
           >
-            <Sparkles size={12} className="text-[#c5a059]" />
-            <span className="text-[8px] md:text-[9px] font-black tracking-[0.4em] text-[#c5a059] uppercase">{t.hero.tagline}</span>
+            <Sparkles size={14} className="text-[#c5a059] animate-pulse" />
+            <span className="text-[10px] md:text-[11px] font-black tracking-[0.5em] text-[#c5a059] uppercase">{t.hero.tagline}</span>
           </motion.div>
           
-          <div className="mb-8">
+          <div className="mb-12">
             <motion.h1 
-              initial={{ opacity: 0, y: 40 }} 
+              initial={{ opacity: 0, y: 50 }} 
               animate={{ opacity: 1, y: 0 }}
-              className="text-5xl md:text-[7rem] font-black leading-[0.95] tracking-tighter text-white serif-display italic"
+              transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+              className="text-6xl md:text-[9rem] font-black leading-[0.85] tracking-tighter text-white serif-display italic"
             >
-              <span className="block mb-2">{lang === 'he' ? 'ניהול' : 'DA'}</span>
-              <span className="gold-gradient-text block">
-                 {lang === 'he' ? 'פרויקטים ויזמות' : 'PROJECTS'}
+              <span className="block mb-4">{lang === 'he' ? 'ניהול' : 'DA'}</span>
+              <span className="gold-gradient-text block relative">
+                 {lang === 'he' ? 'פרויקטים ויזמות' : 'STRATEGY'}
               </span>
             </motion.h1>
           </div>
@@ -380,103 +424,105 @@ ${contactMessage}
           <motion.p 
             initial={{ opacity: 0 }} 
             animate={{ opacity: 1 }} 
-            transition={{ delay: 0.8 }}
-            className="text-[11px] md:text-lg text-zinc-400 mb-12 max-w-lg mx-auto leading-relaxed font-light italic"
+            transition={{ delay: 0.8, duration: 1 }}
+            className="text-[12px] md:text-xl text-zinc-400 mb-16 max-w-2xl mx-auto leading-relaxed font-light italic opacity-80"
           >
             {t.hero.subtitle}
           </motion.p>
 
+          {/* AI Blueprint Engine Console */}
           <motion.div 
             initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 1 }}
-            className="w-full max-w-4xl mx-auto mt-4 p-px rounded-[2rem] bg-gradient-to-br from-[#c5a059]/30 via-white/5 to-[#c5a059]/30 shadow-3xl"
+            transition={{ delay: 1, duration: 0.8 }}
+            className="w-full max-w-5xl mx-auto p-[1px] rounded-[3rem] bg-gradient-to-br from-[#c5a059]/40 via-white/5 to-[#c5a059]/40 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)]"
           >
-            <div className="bg-[#050505]/95 backdrop-blur-3xl rounded-[1.95rem] p-6 md:p-12 border border-white/5 relative overflow-hidden text-start">
-              <div className="flex flex-col md:flex-row items-center gap-5 mb-10">
-                <div className="w-10 h-10 rounded-lg bg-[#c5a059]/10 flex items-center justify-center text-[#c5a059]">
-                  <PenTool size={24} className={isAiLoading ? 'animate-pulse' : ''} />
+            <div className="bg-[#050505]/98 backdrop-blur-3xl rounded-[2.95rem] p-8 md:p-16 border border-white/5 relative overflow-hidden text-start">
+              <div className="flex flex-col md:flex-row items-center gap-6 mb-12">
+                <div className="w-14 h-14 rounded-2xl bg-[#c5a059]/10 flex items-center justify-center text-[#c5a059] shadow-inner border border-[#c5a059]/20">
+                  <BrainCircuit size={32} className={isAiLoading ? 'animate-pulse' : ''} />
                 </div>
                 <div className="text-center md:text-start">
-                  <h2 className="text-base md:text-xl font-black text-white serif-display italic uppercase tracking-widest">
-                    {lang === 'he' ? 'כתוב את הרעיון שלך או את הפתרון לעסק שלך' : 'Blueprint Your Vision or Business Solution'}
+                  <h2 className="text-xl md:text-3xl font-black text-white serif-display italic uppercase tracking-widest">
+                    {lang === 'he' ? 'הזן את החזון שלך לאפיון ופיתוח אסטרטגי' : 'Strategic Blueprint Engine'}
                   </h2>
+                  <p className="text-zinc-500 text-[10px] md:text-xs font-bold uppercase tracking-[0.3em] mt-2 italic">Powered by Gemini 3 Pro Elite</p>
                 </div>
               </div>
 
-              <div className="relative mb-8 group">
+              <div className="relative mb-12 group">
                 <textarea 
                   value={aiInput}
                   onChange={(e) => setAiInput(e.target.value)}
                   placeholder={placeholders[lang][placeholderIndex]}
-                  className="w-full bg-white/[0.02] border border-white/10 rounded-xl p-6 text-white text-sm md:text-lg font-light italic outline-none focus:border-[#c5a059] transition-all min-h-[160px] resize-none pr-14"
+                  className="w-full bg-white/[0.02] border border-white/10 rounded-[2rem] p-8 md:p-10 text-white text-sm md:text-2xl font-light italic outline-none focus:border-[#c5a059] transition-all min-h-[200px] resize-none pr-20 shadow-inner placeholder:text-zinc-800"
                 />
                 <motion.button
-                  whileHover={{ scale: 1.05 }}
+                  whileHover={{ scale: 1.05, backgroundColor: '#fff' }}
                   whileTap={{ scale: 0.95 }}
                   onClick={generateIdeaBlueprint}
                   disabled={isAiLoading || !aiInput.trim()}
-                  className="absolute bottom-5 right-5 w-10 h-10 bg-[#c5a059] text-black rounded-full flex items-center justify-center shadow-lg hover:bg-white transition-all disabled:opacity-30"
+                  className="absolute bottom-8 right-8 w-14 h-14 bg-[#c5a059] text-black rounded-full flex items-center justify-center shadow-[0_10px_30px_rgba(197,160,89,0.4)] hover:shadow-[0_15px_40px_rgba(197,160,89,0.6)] transition-all disabled:opacity-20 disabled:grayscale"
                 >
-                  {isAiLoading ? <Loader2 size={20} className="animate-spin" /> : <Send size={20} />}
+                  {isAiLoading ? <Loader2 size={28} className="animate-spin" /> : <Send size={28} />}
                 </motion.button>
               </div>
 
               <AnimatePresence>
                 {aiResponse && (
                   <motion.div 
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="grid grid-cols-1 lg:grid-cols-2 gap-8"
+                    transition={{ duration: 0.8 }}
+                    className="grid grid-cols-1 lg:grid-cols-2 gap-12"
                   >
-                    <div className="flex flex-col justify-between p-6 rounded-2xl bg-white/[0.01] border border-[#c5a059]/10">
+                    {/* Characterization Column */}
+                    <div className="flex flex-col justify-between p-8 rounded-[2.5rem] bg-white/[0.01] border border-[#c5a059]/20 shadow-2xl relative group/card">
                       <div>
-                        <div className="text-[#c5a059] text-[10px] font-black uppercase tracking-[0.4em] mb-4 flex items-center gap-2">
-                          <CheckCircle2 size={12} /> Strategic Blueprint
+                        <div className="text-[#c5a059] text-[10px] font-black uppercase tracking-[0.5em] mb-6 flex items-center gap-3">
+                          <ShieldCheck size={14} /> Full Strategic characterization
                         </div>
-                        <p className="text-zinc-200 text-xs md:text-base font-light leading-relaxed italic mb-8">
+                        <div className="text-zinc-200 text-sm md:text-lg font-light leading-relaxed italic mb-10 whitespace-pre-wrap max-h-[400px] overflow-y-auto custom-scrollbar pr-4">
                           {aiResponse.characterization}
-                        </p>
+                        </div>
                       </div>
                       <button 
                         onClick={submitToExperts}
-                        className="w-full py-4 bg-[#c5a059] text-black font-black uppercase text-[10px] rounded-full flex items-center justify-center gap-2 hover:bg-white transition-all shadow-xl"
+                        className="w-full py-6 bg-[#c5a059] text-black font-black uppercase text-[11px] rounded-full flex items-center justify-center gap-3 hover:bg-white transition-all shadow-xl tracking-[0.2em]"
                       >
-                        <Rocket size={16} />
-                        {lang === 'he' ? 'הוצא את הרעיון לפועל - שלח עכשיו' : 'Execute Vision - Send to DA'}
+                        <Rocket size={18} />
+                        {lang === 'he' ? 'הוצא את הרעיון לפועל - שלח למומחים' : 'EXECUTE VISION - SEND TO DA'}
                       </button>
+                      <div className="absolute top-0 right-0 p-6 opacity-20 group-hover/card:opacity-100 transition-opacity">
+                         <Zap size={20} className="text-[#c5a059]" />
+                      </div>
                     </div>
 
-                    <div className="rounded-2xl border border-white/10 bg-black overflow-hidden relative group">
-                      <div className="bg-white/5 p-2 flex items-center justify-between border-b border-white/5 px-4">
-                        <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-widest flex items-center gap-2">
-                           <Monitor size={12} /> Live Preview
+                    {/* Auto-Scrolling Live Preview */}
+                    <div className="rounded-[2.5rem] border border-white/10 bg-black overflow-hidden relative group/preview shadow-[0_30px_60px_-15px_rgba(0,0,0,0.7)]">
+                      <div className="bg-white/5 p-4 flex items-center justify-between border-b border-white/10 px-8">
+                        <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest flex items-center gap-3">
+                           <Monitor size={14} className="text-[#c5a059]" /> Intelligent UI Preview
                         </span>
-                        <div className="flex gap-1">
-                          <div className="w-1.5 h-1.5 rounded-full bg-white/20" />
-                          <div className="w-1.5 h-1.5 rounded-full bg-white/20" />
-                          <div className="w-1.5 h-1.5 rounded-full bg-white/20" />
+                        <div className="flex gap-2">
+                          <div className="w-2 h-2 rounded-full bg-white/20" />
+                          <div className="w-2 h-2 rounded-full bg-white/20" />
+                          <div className="w-2 h-2 rounded-full bg-[#c5a059]/40" />
                         </div>
                       </div>
-                      <div className="h-[250px] md:h-[350px] overflow-hidden relative group">
-                         <motion.div 
-                           className="w-full h-full"
-                           whileHover={{ scale: 1.02 }}
-                           transition={{ duration: 0.5 }}
-                         >
-                            <iframe
-                              title="Vision Preview"
-                              srcDoc={aiResponse.htmlPreview}
-                              className="w-full h-full border-none pointer-events-none"
-                            />
-                         </motion.div>
-                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors pointer-events-none flex items-center justify-center opacity-0 group-hover:opacity-100">
-                            <div className="bg-[#c5a059] text-black px-4 py-2 rounded-full text-[9px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg">
-                              <MousePointer2 size={12} /> Hover to Explore
+                      <div className="h-[350px] md:h-[500px] overflow-hidden relative">
+                         <iframe
+                            title="Blueprint Preview"
+                            srcDoc={aiResponse.htmlPreview}
+                            className="w-full h-full border-none pointer-events-none"
+                         />
+                         <div className="absolute inset-0 bg-black/0 group-hover/preview:bg-black/20 transition-colors pointer-events-none flex items-center justify-center opacity-0 group-hover/preview:opacity-100">
+                            <div className="bg-[#c5a059] text-black px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-3 shadow-2xl">
+                              <MousePointer2 size={14} /> Auto-Scrolling Active
                             </div>
                          </div>
                       </div>
-                      <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#c5a059]/40 to-transparent" />
+                      <div className="absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-[#c5a059] to-transparent" />
                     </div>
                   </motion.div>
                 )}
@@ -486,47 +532,50 @@ ${contactMessage}
         </div>
       </section>
 
-      <section id="services" className="py-24 md:py-40 bg-transparent relative z-10">
+      {/* Services Ecosystem */}
+      <section id="services" className="py-32 md:py-56 bg-transparent relative z-10">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div 
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="mb-16 md:mb-32 text-center"
+            className="mb-24 md:mb-40 text-center"
           >
-            <span className="text-[#c5a059] font-bold tracking-[0.8em] uppercase text-[9px] mb-4 block italic">Core Ecosystem</span>
-            <h2 className="text-2xl md:text-5xl font-black text-white serif-display italic leading-tight uppercase tracking-tighter">
+            <span className="text-[#c5a059] font-bold tracking-[1em] uppercase text-[10px] mb-6 block italic">Core Ecosystem</span>
+            <h2 className="text-4xl md:text-7xl font-black text-white serif-display italic leading-tight uppercase tracking-tighter">
               {t.services.sectionSubtitle}
             </h2>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
             {t.services.items.map((service: any, idx: number) => {
               const Icon = IconMap[service.icon];
               const accentColor = ColorMap[service.id] || '#c5a059';
               return (
                 <motion.div
                   key={service.id}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: idx * 0.1 }}
-                  className="bento-card p-10 rounded-[2rem] border border-white/5 relative group bg-black/40 backdrop-blur-xl"
-                  whileHover={{ scale: 1.02, borderColor: accentColor + '44' }}
+                  transition={{ delay: idx * 0.1, duration: 0.7 }}
+                  className="bento-card p-12 rounded-[3rem] border border-white/5 relative group bg-black/40 backdrop-blur-xl hover:bg-black/60 transition-all"
+                  whileHover={{ scale: 1.03, borderColor: accentColor + '66' }}
                 >
                   <div 
-                    className="w-10 h-10 rounded-lg flex items-center justify-center mb-8 shadow-inner border border-white/10"
-                    style={{ backgroundColor: accentColor + '22', color: accentColor }}
+                    className="w-16 h-16 rounded-2xl flex items-center justify-center mb-10 shadow-inner border border-white/10"
+                    style={{ backgroundColor: accentColor + '11', color: accentColor }}
                   >
-                    <Icon size={20} />
+                    <Icon size={32} />
                   </div>
-                  <h4 className="text-lg md:text-xl font-bold mb-4 text-white serif-display italic">{service.title}</h4>
-                  <p className="text-zinc-400 text-[11px] md:text-sm font-light leading-relaxed mb-8 italic opacity-80">
+                  <h4 className="text-2xl md:text-3xl font-bold mb-6 text-white serif-display italic tracking-tight">{service.title}</h4>
+                  <p className="text-zinc-400 text-sm md:text-lg font-light leading-relaxed mb-10 italic opacity-80">
                     {service.description}
                   </p>
-                  <div className="pt-6 border-t border-white/5 flex items-center justify-between">
-                    <span className="text-[8px] font-black uppercase tracking-[0.4em] text-zinc-600">Unit 0{idx+1}</span>
-                    <ArrowUpRight size={16} style={{ color: accentColor }} />
+                  <div className="pt-8 border-t border-white/5 flex items-center justify-between">
+                    <span className="text-[10px] font-black uppercase tracking-[0.5em] text-zinc-600">Unit 0{idx+1}</span>
+                    <div className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-white group-hover:text-black transition-all">
+                       <ArrowUpRight size={20} style={{ color: accentColor }} className="group-hover:text-black" />
+                    </div>
                   </div>
                 </motion.div>
               );
@@ -535,43 +584,48 @@ ${contactMessage}
         </div>
       </section>
 
-      <section id="portfolio" className="py-20 md:py-40 relative z-10 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6 text-center">
-          <div className="mb-16 md:mb-32">
-            <span className="text-[#c5a059] font-bold tracking-[1.5em] uppercase text-[9px] mb-6 block italic">Selected Works</span>
-            <h2 className="text-3xl md:text-6xl font-black tracking-tighter text-white serif-display italic leading-none">
+      {/* Portfolio Masterpiece Gallery */}
+      <section id="portfolio" className="py-24 md:py-56 relative z-10 overflow-hidden bg-black/20">
+        <div className="max-w-[1400px] mx-auto px-6 text-center">
+          <div className="mb-24 md:mb-40">
+            <span className="text-[#c5a059] font-bold tracking-[1.5em] uppercase text-[10px] mb-8 block italic">Selected Works</span>
+            <h2 className="text-5xl md:text-[8rem] font-black tracking-tighter text-white serif-display italic leading-[0.9]">
               {t.portfolio.sectionSubtitle}
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
             {projects.map((project, idx) => (
               <motion.div
                 key={project.id}
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 50 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: idx * 0.1 }}
-                className="group relative h-[350px] md:h-[550px] rounded-[2.5rem] overflow-hidden border border-white/5 cursor-pointer shadow-2xl"
+                transition={{ duration: 1, delay: idx * 0.15 }}
+                className="group relative h-[450px] md:h-[750px] rounded-[4rem] overflow-hidden border border-white/5 cursor-pointer shadow-[0_50px_100px_rgba(0,0,0,0.8)]"
                 onClick={() => window.open(project.link, '_blank')}
               >
                 <div className="absolute inset-0 z-0">
-                   <img src={project.imageUrl} className="w-full h-full object-cover grayscale brightness-50 opacity-50 group-hover:opacity-100 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-[1s]" alt={project.title} />
-                   <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
+                   <img src={project.imageUrl} className="w-full h-full object-cover grayscale brightness-50 opacity-40 group-hover:opacity-100 group-hover:grayscale-0 group-hover:scale-110 transition-all duration-[1.5s]" alt={project.title} />
+                   <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
                 </div>
-                <div className="absolute inset-0 z-10 p-8 md:p-14 flex flex-col justify-end text-start">
-                  <div className="flex gap-3 mb-4">
+                <div className="absolute inset-0 z-10 p-10 md:p-20 flex flex-col justify-end text-start">
+                  <div className="flex flex-wrap gap-3 mb-8">
                     {project.tags.map(tag => (
-                      <span key={tag} className="text-[8px] font-bold uppercase tracking-widest text-[#c5a059] px-3 py-1 bg-black/60 rounded-full border border-[#c5a059]/30">
+                      <span key={tag} className="text-[10px] font-bold uppercase tracking-widest text-[#c5a059] px-5 py-2 bg-black/80 rounded-full border border-[#c5a059]/30 backdrop-blur-md">
                         {tag}
                       </span>
                     ))}
                   </div>
-                  <h4 className="text-xl md:text-4xl font-black serif-display italic text-white mb-3 tracking-tighter group-hover:text-[#c5a059] transition-colors">{project.title}</h4>
-                  <p className="text-zinc-300 text-[10px] md:text-base font-light mb-6 line-clamp-2 italic opacity-0 group-hover:opacity-100 transition-all duration-500">{project.description}</p>
-                  <div className="flex items-center gap-3 text-[#c5a059] font-bold text-[9px] md:text-[10px] uppercase tracking-[0.4em]">
-                    <span className="border-b border-[#c5a059]/40 pb-1">{t.portfolio.viewProject}</span>
-                    <ArrowUpRight size={14} />
+                  <h4 className="text-3xl md:text-6xl font-black serif-display italic text-white mb-6 tracking-tighter group-hover:text-[#c5a059] transition-colors duration-500">{project.title}</h4>
+                  <p className="text-zinc-300 text-sm md:text-xl font-light mb-10 line-clamp-3 italic opacity-0 group-hover:opacity-100 transform translate-y-10 group-hover:translate-y-0 transition-all duration-700">
+                    {project.description}
+                  </p>
+                  <div className="flex items-center gap-6 text-[#c5a059] font-bold text-[10px] md:text-[12px] uppercase tracking-[0.6em] group/btn">
+                    <span className="border-b-2 border-[#c5a059]/30 pb-2 group-hover/btn:border-[#c5a059] transition-all">Launch Digital Asset</span>
+                    <div className="w-12 h-12 rounded-full border border-[#c5a059]/30 flex items-center justify-center group-hover/btn:bg-[#c5a059] group-hover/btn:text-black transition-all">
+                       <ExternalLink size={20} />
+                    </div>
                   </div>
                 </div>
               </motion.div>
@@ -580,92 +634,104 @@ ${contactMessage}
         </div>
       </section>
 
-      <section id="contact" className="py-24 md:py-40 bg-transparent relative z-10">
-        <div className="max-w-6xl mx-auto px-6 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-start">
+      {/* Secure Inquiry Section */}
+      <section id="contact" className="py-32 md:py-64 bg-transparent relative z-10">
+        <div className="max-w-[1300px] mx-auto px-6 relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-32 items-start">
             <div className="text-center lg:text-start">
-              <span className="text-[#c5a059] font-bold tracking-[1.5em] uppercase text-[9px] mb-12 block">Secure Inquiry</span>
-              <h3 className="text-3xl md:text-[5rem] font-black mb-12 leading-[0.9] text-white serif-display italic tracking-tighter uppercase">
+              <span className="text-[#c5a059] font-bold tracking-[1.5em] uppercase text-[10px] mb-16 block">Secure Inquiry</span>
+              <h3 className="text-5xl md:text-[7rem] font-black mb-16 leading-[0.85] text-white serif-display italic tracking-tighter uppercase">
                 {t.contact.sectionSubtitle}
               </h3>
               
-              <div className="space-y-12">
-                <div className="flex items-center gap-6 group">
-                  <div className="w-14 h-14 bg-[#0a0a0b] border border-white/10 rounded-full flex items-center justify-center text-[#c5a059]">
-                    <Phone size={24} />
+              <div className="space-y-20">
+                <div className="flex items-center gap-10 group">
+                  <div className="w-20 h-20 bg-[#0a0a0b] border border-white/10 rounded-full flex items-center justify-center text-[#c5a059] shadow-2xl group-hover:bg-[#c5a059] group-hover:text-black transition-all duration-500">
+                    <Phone size={36} />
                   </div>
                   <div>
-                    <p className="text-zinc-500 text-[8px] uppercase tracking-[0.5em] mb-1 font-black italic">Voice Comms</p>
-                    <p className="text-xl md:text-2xl font-black text-white tracking-tighter">055-667-4329</p>
+                    <p className="text-zinc-500 text-[10px] uppercase tracking-[0.6em] mb-3 font-black italic">Voice Line</p>
+                    <p className="text-2xl md:text-4xl font-black text-white tracking-tighter tabular-nums">055-667-4329</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-6 group">
-                  <div className="w-14 h-14 bg-[#0a0a0b] border border-white/10 rounded-full flex items-center justify-center text-[#c5a059]">
-                    <Mail size={24} />
+                <div className="flex items-center gap-10 group">
+                  <div className="w-20 h-20 bg-[#0a0a0b] border border-white/10 rounded-full flex items-center justify-center text-[#c5a059] shadow-2xl group-hover:bg-[#c5a059] group-hover:text-black transition-all duration-500">
+                    <Mail size={36} />
                   </div>
                   <div>
-                    <p className="text-zinc-500 text-[8px] uppercase tracking-[0.5em] mb-1 font-black italic">Mail Drop</p>
-                    <p className="text-xl md:text-2xl font-black text-white tracking-tighter uppercase">DA@101.ORG.IL</p>
+                    <p className="text-zinc-500 text-[10px] uppercase tracking-[0.6em] mb-3 font-black italic">Encrypted Mail</p>
+                    <p className="text-2xl md:text-4xl font-black text-white tracking-tighter uppercase font-serif italic">DA@101.ORG.IL</p>
                   </div>
                 </div>
               </div>
             </div>
 
             <motion.div 
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="p-10 md:p-14 rounded-[3rem] bento-card shadow-3xl relative overflow-hidden border border-white/10 bg-black/60 shadow-gold-500/10"
+              transition={{ duration: 1 }}
+              className="p-10 md:p-20 rounded-[5rem] bento-card shadow-[0_100px_150px_-50px_rgba(0,0,0,1)] relative overflow-hidden border border-white/10 bg-black/60 shadow-gold-500/5"
             >
               {!isFormSubmitted ? (
-                <form onSubmit={handleFinalSubmit} className="space-y-10 relative z-10">
-                  <div className="grid grid-cols-1 gap-10">
-                    <div className="space-y-2">
-                      <label className="text-[9px] font-bold text-zinc-500 uppercase tracking-[0.5em]">{t.contact.name}</label>
+                <form onSubmit={handleFinalSubmit} className="space-y-16 relative z-10">
+                  <div className="grid grid-cols-1 gap-16">
+                    <div className="space-y-4">
+                      <label className="text-[11px] font-bold text-zinc-500 uppercase tracking-[0.7em] ml-2">{t.contact.name}</label>
                       <input 
                         type="text" 
                         required 
                         value={contactName}
                         onChange={(e) => setContactName(e.target.value)}
-                        className="w-full bg-transparent border-b border-white/10 p-2 focus:border-[#c5a059] outline-none text-sm md:text-xl font-light text-white transition-all serif-display italic" 
-                        placeholder={lang === 'he' ? 'הזן שם מלא' : 'Your Name'} 
+                        className="w-full bg-transparent border-b-2 border-white/10 p-4 focus:border-[#c5a059] outline-none text-xl md:text-3xl font-light text-white transition-all serif-display italic placeholder:text-zinc-900" 
+                        placeholder={lang === 'he' ? 'שם מלא / יישות עסקית' : 'Full Name / Entity'} 
                       />
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-[9px] font-bold text-zinc-500 uppercase tracking-[0.5em]">{t.contact.phone}</label>
+                    <div className="space-y-4">
+                      <label className="text-[11px] font-bold text-zinc-500 uppercase tracking-[0.7em] ml-2">{t.contact.phone}</label>
                       <input 
                         type="tel" 
                         required 
                         value={contactPhone}
                         onChange={(e) => setContactPhone(e.target.value)}
-                        className="w-full bg-transparent border-b border-white/10 p-2 focus:border-[#c5a059] outline-none text-sm md:text-xl font-light text-white transition-all serif-display italic" 
-                        placeholder={lang === 'he' ? 'מספר טלפון' : 'Phone'} 
+                        className="w-full bg-transparent border-b-2 border-white/10 p-4 focus:border-[#c5a059] outline-none text-xl md:text-3xl font-light text-white transition-all serif-display italic placeholder:text-zinc-900" 
+                        placeholder={lang === 'he' ? 'מספר ליצירת קשר' : 'Contact Number'} 
                       />
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-[9px] font-bold text-zinc-500 uppercase tracking-[0.5em]">{t.contact.message}</label>
+                    <div className="space-y-4">
+                      <label className="text-[11px] font-bold text-zinc-500 uppercase tracking-[0.7em] ml-2">{t.contact.message}</label>
                       <textarea 
                         rows={2} 
                         value={contactMessage}
                         onChange={(e) => setContactMessage(e.target.value)}
                         required 
-                        className="w-full bg-transparent border-b border-white/10 p-2 focus:border-[#c5a059] outline-none resize-none text-sm md:text-xl font-light text-white transition-all serif-display italic" 
-                        placeholder={lang === 'he' ? 'ספר לנו על הפרויקט שלך...' : 'Brief vision summary...'} 
+                        className="w-full bg-transparent border-b-2 border-white/10 p-4 focus:border-[#c5a059] outline-none resize-none text-xl md:text-3xl font-light text-white transition-all serif-display italic placeholder:text-zinc-900" 
+                        placeholder={lang === 'he' ? 'פרט כאן את החזון שלך...' : 'Brief vision summary...'} 
                       />
                     </div>
                   </div>
-                  <button 
+                  <motion.button 
                     type="submit"
-                    className="w-full py-5 bg-white text-black font-black uppercase text-[10px] md:text-xs rounded-full shadow-lg hover:bg-[#c5a059] hover:text-white transition-all tracking-[0.6em]"
+                    whileHover={{ scale: 1.02, backgroundColor: '#c5a059', color: '#000' }}
+                    whileTap={{ scale: 0.98 }}
+                    className="w-full py-8 bg-white text-black font-black uppercase text-xs md:text-sm rounded-full shadow-2xl transition-all tracking-[1em] relative overflow-hidden group"
                   >
-                    {t.contact.send}
-                  </button>
+                    <span className="relative z-10">{t.contact.send}</span>
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+                  </motion.button>
                 </form>
               ) : (
-                <div className="text-center py-12">
-                   <CheckCircle2 size={50} className="text-[#c5a059] mx-auto mb-6" />
-                   <h4 className="text-xl md:text-3xl font-black text-white serif-display italic mb-4 tracking-tight">{t.contact.success}</h4>
-                   <button onClick={() => setIsFormSubmitted(false)} className="text-[#c5a059] text-[9px] font-black uppercase underline tracking-[0.4em]">New Inquiry</button>
+                <div className="text-center py-24">
+                   <motion.div 
+                     initial={{ scale: 0, rotate: -180 }} 
+                     animate={{ scale: 1, rotate: 0 }} 
+                     className="w-32 h-32 bg-[#c5a059]/10 rounded-full flex items-center justify-center mx-auto mb-12 border border-[#c5a059]/20 shadow-[0_0_50px_rgba(197,160,89,0.2)]"
+                   >
+                      <CheckCircle2 size={60} className="text-[#c5a059]" />
+                   </motion.div>
+                   <h4 className="text-2xl md:text-5xl font-black text-white serif-display italic mb-8 tracking-tight">{t.contact.success}</h4>
+                   <p className="text-zinc-500 mb-12 text-lg md:text-2xl italic font-light">אנחנו ננתח את האפיון ונחזור אליך תוך 24 שעות.</p>
+                   <button onClick={() => setIsFormSubmitted(false)} className="text-[#c5a059] text-xs font-black uppercase underline underline-offset-[12px] tracking-[0.6em] hover:text-white transition-colors">Start New Inquiry</button>
                 </div>
               )}
             </motion.div>
@@ -673,39 +739,66 @@ ${contactMessage}
         </div>
       </section>
 
-      <footer className="py-20 md:py-32 bg-black border-t border-white/5 relative z-10 overflow-hidden text-center">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex flex-col items-center gap-12">
-            <div className="flex items-center gap-5">
-              <div className="w-10 h-10 bg-gradient-to-br from-[#c5a059] to-[#8a6d3b] rounded-xl flex items-center justify-center font-black text-white text-xl md:text-2xl serif-display">DA</div>
+      {/* Footer */}
+      <footer className="py-24 md:py-48 bg-black border-t border-white/5 relative z-10 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6 text-center">
+          <div className="flex flex-col items-center gap-20">
+            <div className="flex items-center gap-8">
+              <div className="w-16 h-16 bg-gradient-to-br from-[#c5a059] to-[#8a6d3b] rounded-[1.5rem] flex items-center justify-center font-black text-white text-3xl serif-display shadow-2xl">DA</div>
               <div className="text-start leading-none">
-                <span className="text-lg md:text-2xl font-black tracking-widest block serif-display uppercase text-white">DA GROUP</span>
-                <span className="text-[8px] md:text-[10px] text-[#c5a059] tracking-[0.6em] font-bold uppercase mt-1 italic block opacity-80">Gold Tier Ventures</span>
+                <span className="text-2xl md:text-5xl font-black tracking-[0.1em] block serif-display uppercase text-white">DA GROUP</span>
+                <span className="text-[12px] md:text-[14px] text-[#c5a059] tracking-[1em] font-bold uppercase mt-3 italic block opacity-80">Gold Tier Ventures</span>
               </div>
             </div>
-            <p className="text-zinc-600 text-[8px] md:text-[10px] font-bold tracking-[0.6em] uppercase italic opacity-60">© {new Date().getFullYear()} DA STRATEGY & VENTURES. ALL RIGHTS RESERVED.</p>
+            
+            <div className="flex flex-wrap justify-center gap-x-20 gap-y-10">
+               {['services', 'portfolio', 'contact'].map(item => (
+                 <a key={item} href={`#${item}`} onClick={(e) => handleNavClick(e, item)} className="text-[11px] font-bold tracking-[0.5em] uppercase text-zinc-500 hover:text-white transition-colors border-b border-transparent hover:border-[#c5a059] pb-2">{t.nav[item]}</a>
+               ))}
+            </div>
+
+            <div className="space-y-8">
+               <p className="text-zinc-600 text-[10px] md:text-[13px] font-bold tracking-[0.8em] uppercase italic opacity-60 max-w-2xl mx-auto leading-relaxed">
+                  ULTRA-HIGH END STRATEGY & ARCHITECTURE FOR VISIONARY DISRUPTORS.
+               </p>
+               <div className="flex justify-center gap-8 opacity-40">
+                  <ShieldCheck size={20} className="text-zinc-500" />
+                  <Globe size={20} className="text-zinc-500" />
+                  <Zap size={20} className="text-zinc-500" />
+               </div>
+               <p className="text-zinc-800 text-[10px] md:text-[12px] font-bold tracking-[0.6em] uppercase">
+                  © {new Date().getFullYear()} DA PROJECT MANAGEMENT & ENTREPRENEURSHIP. ALL RIGHTS RESERVED.
+               </p>
+            </div>
           </div>
         </div>
       </footer>
 
-      <div className="fixed bottom-8 left-8 z-[100] flex flex-col gap-5">
+      {/* Floating Action Buttons */}
+      <div className="fixed bottom-10 left-10 z-[100] flex flex-col gap-8">
         <motion.a 
           href="tel:0556674329" 
-          whileHover={{ scale: 1.1, backgroundColor: "#c5a059" }}
-          className="w-10 h-10 md:w-14 md:h-14 bg-[#0a0a0b] border border-white/10 text-white rounded-2xl flex items-center justify-center shadow-xl transition-all"
+          whileHover={{ scale: 1.1, y: -8, backgroundColor: '#c5a059' }}
+          className="w-14 h-14 md:w-20 md:h-20 bg-[#0a0a0b] border border-white/10 text-white rounded-[2rem] flex items-center justify-center shadow-2xl transition-all backdrop-blur-xl group"
         >
-          <Phone size={20} />
+          <Phone size={30} className="group-hover:text-black transition-colors" />
         </motion.a>
         <motion.a 
           href="https://wa.me/972556674329" 
           target="_blank" 
           rel="noopener noreferrer"
-          whileHover={{ scale: 1.1, backgroundColor: "#25d366" }}
-          className="w-12 h-12 md:w-16 md:h-16 bg-green-800 text-white rounded-[1.5rem] flex items-center justify-center shadow-xl transition-all"
+          whileHover={{ scale: 1.1, y: -8 }}
+          className="w-16 h-16 md:w-24 md:h-24 bg-green-600/90 text-white rounded-[2.5rem] flex items-center justify-center shadow-[0_20px_60px_rgba(22,163,74,0.4)] transition-all backdrop-blur-xl group"
         >
-          <MessageCircle size={24} />
+          <MessageCircle size={40} className="group-hover:scale-110 transition-transform" />
         </motion.a>
       </div>
+
+      {/* Scroll Progress Bar */}
+      <motion.div 
+        className="fixed top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-transparent via-[#c5a059] to-transparent origin-left z-[100]"
+        style={{ scaleX: useSpring(useScroll().scrollYProgress, { stiffness: 100, damping: 30 }) }}
+      />
     </div>
   );
 };
