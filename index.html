@@ -1,0 +1,124 @@
+
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DA - ניהול פרויקטים ויזמות | Digital Excellence</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@200;300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@100;300;400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --gold-primary: #c5a059;
+        --gold-light: #f1e4c1;
+        --gold-deep: #8a6d3b;
+        --bg-dark: #020202;
+        --accent-blue: #0ea5e9;
+        --accent-purple: #a855f7;
+      }
+      body {
+        font-family: 'Assistant', 'Inter', sans-serif;
+        background-color: var(--bg-dark);
+        color: #f5f5f7;
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+        cursor: none; /* Hide default cursor for advanced custom one */
+      }
+      
+      .serif-display {
+        font-family: 'Playfair Display', serif;
+      }
+
+      ::-webkit-scrollbar {
+        width: 4px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #000;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #222;
+        border-radius: 10px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: var(--gold-primary);
+      }
+      
+      .noise {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        pointer-events: none;
+        opacity: 0.02;
+        z-index: 9999;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+      }
+
+      .gold-gradient-text {
+        background: linear-gradient(to right, #c5a059, #f1e4c1, #ffffff, #f1e4c1, #c5a059);
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: shine 8s linear infinite;
+      }
+
+      @keyframes shine {
+        to { background-position: 200% center; }
+      }
+
+      .glass-menu {
+        background: rgba(2, 2, 2, 0.6);
+        backdrop-filter: blur(25px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      }
+
+      .hero-grid {
+        background-image: 
+          radial-gradient(circle at 2px 2px, rgba(197, 160, 89, 0.03) 1px, transparent 0);
+        background-size: 30px 30px;
+      }
+
+      .glow-spot {
+        position: absolute;
+        filter: blur(120px);
+        border-radius: 50%;
+        z-index: 0;
+        pointer-events: none;
+        opacity: 0.15;
+      }
+
+      .bento-card {
+        background: rgba(10, 10, 11, 0.6);
+        border: 1px solid rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(10px);
+        transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+      }
+      
+      .bento-card:hover {
+        border-color: rgba(197, 160, 89, 0.3);
+        background: rgba(15, 15, 17, 0.8);
+        transform: translateY(-5px);
+      }
+
+      @media (max-width: 768px) {
+        body { cursor: auto; }
+      }
+    </style>
+    <script type="importmap">
+{
+  "imports": {
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
+    "framer-motion": "https://esm.sh/framer-motion@^12.23.26",
+    "@google/genai": "https://esm.sh/@google/genai@^1.34.0"
+  }
+}
+</script>
+  <link rel="stylesheet" href="/index.css">
+</head>
+  <body>
+    <div class="noise"></div>
+    <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>
