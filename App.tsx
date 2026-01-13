@@ -41,12 +41,13 @@ interface ExtendedProject extends Project {
   tags: string[];
 }
 
+// אופטימיזציה: הוספת w=800, q=75 ו-fm=webp לכל תמונות הפורטפוליו
 const projects: ExtendedProject[] = [
   {
     id: 'helevhitim',
     title: 'מוסדות חלב חיטים',
     description: 'מערכת ניהול מורכבת ופורטל ארגוני חדשני המרכז את כלל פעילות המוסד, כולל מערכות גבייה וניהול תלמידים מתקדמות.',
-    imageUrl: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=1200',
+    imageUrl: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=75&w=800&fm=webp',
     link: 'https://www.helevhitim.com/',
     tags: ['Software', 'Enterprise', 'Management']
   },
@@ -54,7 +55,7 @@ const projects: ExtendedProject[] = [
     id: 'jennyskallot',
     title: 'ג׳ני שמלות כלה',
     description: 'אתר בוטיק יוקרתי המציג קולקציות שמלות כלה בתצוגה ויזואלית עוצרת נשימה, חווית משתמש פרימיום ומערכת קביעת תורים.',
-    imageUrl: 'https://images.unsplash.com/photo-1596433809252-260c2745dfdd?auto=format&fit=crop&q=80&w=1200',
+    imageUrl: 'https://images.unsplash.com/photo-1596433809252-260c2745dfdd?auto=format&fit=crop&q=75&w=800&fm=webp',
     link: 'https://jennyskallot.com/',
     tags: ['Luxury E-comm', 'Fashion', 'UX/UI']
   },
@@ -62,7 +63,7 @@ const projects: ExtendedProject[] = [
     id: 'lichvoda',
     title: 'סטודיו לכבודה',
     description: 'אתר תדמית יוקרתי לסטודיו לאומנויות הבמה המשלב תנועה ואסתטיקה גבוהה עם גלריות וידאו אינטראקטיביות.',
-    imageUrl: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=1200',
+    imageUrl: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=75&w=800&fm=webp',
     link: 'https://lichvoda.co.il/',
     tags: ['Portfolio', 'Design', 'Art']
   },
@@ -70,7 +71,7 @@ const projects: ExtendedProject[] = [
     id: 'liveraise',
     title: 'LiveRaise Production',
     description: 'מערכת מסכי רתימה דינמית לגיוס המונים בזמן אמת עם גרפיקה חיה המחוברת למסדי נתונים חיצוניים.',
-    imageUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=1200',
+    imageUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=75&w=800&fm=webp',
     link: 'https://liveraise-production.up.railway.app/',
     tags: ['Real-time', 'Fundraising', 'Analytics']
   }
@@ -105,18 +106,19 @@ const placeholders = {
 
 const AtmosphericBackground = () => {
   const { scrollYProgress } = useScroll();
-  const yTranslate = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
+  const yTranslate = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
   
   return (
     <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden bg-[#020202]">
-      <motion.div style={{ y: yTranslate }} className="absolute inset-0 opacity-15">
+      <motion.div style={{ y: yTranslate }} className="absolute inset-0 opacity-15 transform-gpu will-change-transform">
         <img 
-          src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=2000" 
+          src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=60&w=1400&fm=webp" 
           className="w-full h-full object-cover grayscale brightness-50"
           alt="Atmosphere"
         />
       </motion.div>
       <div className="absolute inset-0 bg-gradient-to-b from-[#020202] via-transparent to-[#020202]" />
+      {/* אופטימיזציה: הפחתת Blur ל-64px והוספת transform-gpu למניעת לאגים */}
       <motion.div 
         animate={{ 
           x: [0, 150, -150, 0], 
@@ -124,7 +126,7 @@ const AtmosphericBackground = () => {
           scale: [1, 1.4, 0.8, 1]
         }}
         transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-        className="glow-spot w-[600px] h-[600px] bg-[#c5a059] top-[-10%] left-[-10%] opacity-20 blur-[120px]"
+        className="glow-spot w-[600px] h-[600px] bg-[#c5a059] top-[-10%] left-[-10%] opacity-20 blur-[64px] transform-gpu will-change-transform"
       />
       <motion.div 
         animate={{ 
@@ -133,7 +135,7 @@ const AtmosphericBackground = () => {
           scale: [1, 0.7, 1.5, 1]
         }}
         transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-        className="glow-spot w-[500px] h-[500px] bg-[#0ea5e9] bottom-[-10%] right-[-10%] opacity-20 blur-[100px]"
+        className="glow-spot w-[500px] h-[500px] bg-[#0ea5e9] bottom-[-10%] right-[-10%] opacity-20 blur-[60px] transform-gpu will-change-transform"
       />
     </div>
   );
@@ -157,11 +159,11 @@ const CustomCursor = () => {
   return (
     <>
       <motion.div 
-        className="fixed top-0 left-0 w-8 h-8 border border-[#c5a059] rounded-full pointer-events-none z-[9999] hidden md:block"
+        className="fixed top-0 left-0 w-8 h-8 border border-[#c5a059] rounded-full pointer-events-none z-[9999] hidden md:block transform-gpu"
         style={{ x: ringX, y: ringY, translateX: "-50%", translateY: "-50%" }}
       />
       <motion.div 
-        className="fixed top-0 left-0 w-1.5 h-1.5 bg-[#c5a059] rounded-full pointer-events-none z-[9999] hidden md:block"
+        className="fixed top-0 left-0 w-1.5 h-1.5 bg-[#c5a059] rounded-full pointer-events-none z-[9999] hidden md:block transform-gpu"
         style={{ x: mouseX, y: mouseY, translateX: "-50%", translateY: "-50%" }}
       />
     </>
@@ -217,7 +219,6 @@ const App: React.FC = () => {
       const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
       const genAI = new GoogleGenerativeAI(apiKey);
       
-      // שימוש במודל Gemini 3 Pro Preview החזק ביותר
       const model = genAI.getGenerativeModel({ model: "gemini-3-pro-preview" });
 
       const prompt = `You are the Master Creative Strategist and Lead Software Architect at DA Group. 
@@ -242,14 +243,12 @@ const App: React.FC = () => {
       const response = await result.response;
       let text = response.text();
       
-      // ניקוי אגרסיבי של תגיות קוד
       text = text.replace(/```json/g, '').replace(/```/g, '').trim();
       
       const parsedResult = JSON.parse(text);
       setAiResponse(parsedResult);
     } catch (error) {
       console.error("Blueprint Engine Error:", error);
-      // Fallback 
       try {
         const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
         const fallbackModel = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
@@ -283,14 +282,13 @@ const App: React.FC = () => {
       <CustomCursor />
       <AtmosphericBackground />
       
-      {/* Background Floating Typography Layers */}
+      {/* Background Floating Typography Layers - Optimized with transform-gpu */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-         {/* Right Side Text Track */}
          <div className="absolute right-[-3vw] top-0 bottom-0 flex flex-col items-center justify-around opacity-[0.03] select-none font-black text-[12vh] md:text-[18vh] uppercase serif-display italic leading-none pointer-events-none">
             <motion.div 
               animate={{ y: [0, -1000] }}
               transition={{ duration: 50, repeat: Infinity, ease: "linear" }}
-              className="flex flex-col gap-32"
+              className="flex flex-col gap-32 transform-gpu will-change-transform"
             >
               <span className="gold-gradient-text transform rotate-90">EXCELLENCE</span>
               <span className="gold-gradient-text transform rotate-90">STRATEGY</span>
@@ -300,12 +298,11 @@ const App: React.FC = () => {
               <span className="gold-gradient-text transform rotate-90">STRATEGY</span>
             </motion.div>
          </div>
-         {/* Left Side Text Track */}
          <div className="absolute left-[-3vw] top-0 bottom-0 flex flex-col items-center justify-around opacity-[0.03] select-none font-black text-[12vh] md:text-[18vh] uppercase serif-display italic leading-none pointer-events-none">
             <motion.div 
               animate={{ y: [-1000, 0] }}
               transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
-              className="flex flex-col gap-32"
+              className="flex flex-col gap-32 transform-gpu will-change-transform"
             >
               <span className="gold-gradient-text transform -rotate-90">ENTREPRENEURSHIP</span>
               <span className="gold-gradient-text transform -rotate-90">PREMIUM</span>
@@ -317,8 +314,7 @@ const App: React.FC = () => {
          </div>
       </div>
 
-      {/* Modern Fixed Navbar */}
-      <nav className="fixed top-0 w-full z-[90] h-16 md:h-24 flex items-center border-b border-white/5 bg-black/80 backdrop-blur-2xl shadow-2xl">
+      <nav className="fixed top-0 w-full z-[90] h-16 md:h-24 flex items-center border-b border-white/5 bg-black/80 backdrop-blur-2xl shadow-2xl transform-gpu">
         <div className="max-w-[1400px] mx-auto px-6 md:px-12 w-full flex items-center justify-between">
           <motion.div 
             initial={{ opacity: 0, x: -30 }} 
@@ -326,7 +322,7 @@ const App: React.FC = () => {
             className="flex items-center gap-4 cursor-pointer group"
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           >
-            <div className="w-10 h-10 md:w-14 md:h-14 bg-gradient-to-br from-[#c5a059] to-[#8a6d3b] rounded-xl flex items-center justify-center font-black text-white text-xl md:text-2xl shadow-[0_0_30px_rgba(197,160,89,0.3)] group-hover:scale-105 transition-transform duration-500">DA</div>
+            <div className="w-10 h-10 md:w-14 md:h-14 bg-gradient-to-br from-[#c5a059] to-[#8a6d3b] rounded-xl flex items-center justify-center font-black text-white text-xl md:text-2xl shadow-[0_0_30px_rgba(197,160,89,0.3)] group-hover:scale-105 transition-transform duration-500 transform-gpu">DA</div>
             <div className="flex flex-col leading-tight">
               <span className="text-xs md:text-lg font-black tracking-[0.2em] block serif-display uppercase text-white group-hover:text-[#c5a059] transition-colors">DA GROUP</span>
               <span className="text-[7px] md:text-[10px] text-[#c5a059] tracking-[0.5em] font-bold uppercase italic opacity-80">Strategic Ventures</span>
@@ -362,7 +358,6 @@ const App: React.FC = () => {
         </div>
       </nav>
 
-      {/* Mobile Sidebar Menu */}
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div 
@@ -370,7 +365,7 @@ const App: React.FC = () => {
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed inset-y-0 right-0 w-[80%] z-[100] bg-black/95 backdrop-blur-3xl border-l border-white/10 flex flex-col p-12 lg:hidden shadow-[-20px_0_50px_rgba(0,0,0,0.5)]"
+            className="fixed inset-y-0 right-0 w-[80%] z-[100] bg-black/95 backdrop-blur-3xl border-l border-white/10 flex flex-col p-12 lg:hidden shadow-[-20px_0_50px_rgba(0,0,0,0.5)] transform-gpu"
           >
             <div className="flex justify-end mb-20">
                <button onClick={() => setIsMenuOpen(false)} className="text-[#c5a059]"><X size={36} /></button>
@@ -395,13 +390,12 @@ const App: React.FC = () => {
         )}
       </AnimatePresence>
 
-      {/* Hero & Blueprint Section */}
       <section id="home" className="relative min-h-screen flex flex-col items-center justify-center pt-32 pb-20 overflow-hidden">
         <div className="max-w-[1200px] mx-auto px-6 w-full relative z-10 text-center">
           <motion.div 
             initial={{ opacity: 0, y: 20 }} 
             animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-3 px-6 py-2 bg-white/[0.03] border border-white/10 rounded-full mb-12 backdrop-blur-xl shadow-inner"
+            className="inline-flex items-center gap-3 px-6 py-2 bg-white/[0.03] border border-white/10 rounded-full mb-12 backdrop-blur-xl shadow-inner transform-gpu"
           >
             <Sparkles size={14} className="text-[#c5a059] animate-pulse" />
             <span className="text-[10px] md:text-[11px] font-black tracking-[0.5em] text-[#c5a059] uppercase">{t.hero.tagline}</span>
@@ -412,7 +406,7 @@ const App: React.FC = () => {
               initial={{ opacity: 0, y: 50 }} 
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-              className="text-6xl md:text-[9rem] font-black leading-[0.85] tracking-tighter text-white serif-display italic"
+              className="text-6xl md:text-[9rem] font-black leading-[0.85] tracking-tighter text-white serif-display italic transform-gpu"
             >
               <span className="block mb-4">{lang === 'he' ? 'ניהול' : 'DA'}</span>
               <span className="gold-gradient-text block relative">
@@ -430,16 +424,15 @@ const App: React.FC = () => {
             {t.hero.subtitle}
           </motion.p>
 
-          {/* AI Blueprint Engine Console */}
           <motion.div 
             initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 1, duration: 0.8 }}
-            className="w-full max-w-5xl mx-auto p-[1px] rounded-[3rem] bg-gradient-to-br from-[#c5a059]/40 via-white/5 to-[#c5a059]/40 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)]"
+            className="w-full max-w-5xl mx-auto p-[1px] rounded-[3rem] bg-gradient-to-br from-[#c5a059]/40 via-white/5 to-[#c5a059]/40 shadow-[0_50px_100px_-20px_rgba(0,0,0,0.5)] transform-gpu"
           >
             <div className="bg-[#050505]/98 backdrop-blur-3xl rounded-[2.95rem] p-8 md:p-16 border border-white/5 relative overflow-hidden text-start">
               <div className="flex flex-col md:flex-row items-center gap-6 mb-12">
-                <div className="w-14 h-14 rounded-2xl bg-[#c5a059]/10 flex items-center justify-center text-[#c5a059] shadow-inner border border-[#c5a059]/20">
+                <div className="w-14 h-14 rounded-2xl bg-[#c5a059]/10 flex items-center justify-center text-[#c5a059] shadow-inner border border-[#c5a059]/20 transform-gpu">
                   <BrainCircuit size={32} className={isAiLoading ? 'animate-pulse' : ''} />
                 </div>
                 <div className="text-center md:text-start">
@@ -462,7 +455,7 @@ const App: React.FC = () => {
                   whileTap={{ scale: 0.95 }}
                   onClick={generateIdeaBlueprint}
                   disabled={isAiLoading || !aiInput.trim()}
-                  className="absolute bottom-8 right-8 w-14 h-14 bg-[#c5a059] text-black rounded-full flex items-center justify-center shadow-[0_10px_30px_rgba(197,160,89,0.4)] hover:shadow-[0_15px_40px_rgba(197,160,89,0.6)] transition-all disabled:opacity-20 disabled:grayscale"
+                  className="absolute bottom-8 right-8 w-14 h-14 bg-[#c5a059] text-black rounded-full flex items-center justify-center shadow-[0_10px_30px_rgba(197,160,89,0.4)] hover:shadow-[0_15px_40px_rgba(197,160,89,0.6)] transition-all disabled:opacity-20 disabled:grayscale transform-gpu"
                 >
                   {isAiLoading ? <Loader2 size={28} className="animate-spin" /> : <Send size={28} />}
                 </motion.button>
@@ -476,8 +469,7 @@ const App: React.FC = () => {
                     transition={{ duration: 0.8 }}
                     className="grid grid-cols-1 lg:grid-cols-2 gap-12"
                   >
-                    {/* Characterization Column */}
-                    <div className="flex flex-col justify-between p-8 rounded-[2.5rem] bg-white/[0.01] border border-[#c5a059]/20 shadow-2xl relative group/card">
+                    <div className="flex flex-col justify-between p-8 rounded-[2.5rem] bg-white/[0.01] border border-[#c5a059]/20 shadow-2xl relative group/card transform-gpu">
                       <div>
                         <div className="text-[#c5a059] text-[10px] font-black uppercase tracking-[0.5em] mb-6 flex items-center gap-3">
                           <ShieldCheck size={14} /> Full Strategic characterization
@@ -488,7 +480,7 @@ const App: React.FC = () => {
                       </div>
                       <button 
                         onClick={submitToExperts}
-                        className="w-full py-6 bg-[#c5a059] text-black font-black uppercase text-[11px] rounded-full flex items-center justify-center gap-3 hover:bg-white transition-all shadow-xl tracking-[0.2em]"
+                        className="w-full py-6 bg-[#c5a059] text-black font-black uppercase text-[11px] rounded-full flex items-center justify-center gap-3 hover:bg-white transition-all shadow-xl tracking-[0.2em] transform-gpu"
                       >
                         <Rocket size={18} />
                         {lang === 'he' ? 'הוצא את הרעיון לפועל - שלח למומחים' : 'EXECUTE VISION - SEND TO DA'}
@@ -498,8 +490,7 @@ const App: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Auto-Scrolling Live Preview */}
-                    <div className="rounded-[2.5rem] border border-white/10 bg-black overflow-hidden relative group/preview shadow-[0_30px_60px_-15px_rgba(0,0,0,0.7)]">
+                    <div className="rounded-[2.5rem] border border-white/10 bg-black overflow-hidden relative group/preview shadow-[0_30px_60px_-15px_rgba(0,0,0,0.7)] transform-gpu">
                       <div className="bg-white/5 p-4 flex items-center justify-between border-b border-white/10 px-8">
                         <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest flex items-center gap-3">
                            <Monitor size={14} className="text-[#c5a059]" /> Intelligent UI Preview
@@ -532,14 +523,13 @@ const App: React.FC = () => {
         </div>
       </section>
 
-      {/* Services Ecosystem */}
       <section id="services" className="py-32 md:py-56 bg-transparent relative z-10">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div 
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="mb-24 md:mb-40 text-center"
+            className="mb-24 md:mb-40 text-center transform-gpu"
           >
             <span className="text-[#c5a059] font-bold tracking-[1em] uppercase text-[10px] mb-6 block italic">Core Ecosystem</span>
             <h2 className="text-4xl md:text-7xl font-black text-white serif-display italic leading-tight uppercase tracking-tighter">
@@ -558,11 +548,11 @@ const App: React.FC = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: idx * 0.1, duration: 0.7 }}
-                  className="bento-card p-12 rounded-[3rem] border border-white/5 relative group bg-black/40 backdrop-blur-xl hover:bg-black/60 transition-all"
+                  className="bento-card p-12 rounded-[3rem] border border-white/5 relative group bg-black/40 backdrop-blur-xl hover:bg-black/60 transition-all transform-gpu"
                   whileHover={{ scale: 1.03, borderColor: accentColor + '66' }}
                 >
                   <div 
-                    className="w-16 h-16 rounded-2xl flex items-center justify-center mb-10 shadow-inner border border-white/10"
+                    className="w-16 h-16 rounded-2xl flex items-center justify-center mb-10 shadow-inner border border-white/10 transform-gpu"
                     style={{ backgroundColor: accentColor + '11', color: accentColor }}
                   >
                     <Icon size={32} />
@@ -573,7 +563,7 @@ const App: React.FC = () => {
                   </p>
                   <div className="pt-8 border-t border-white/5 flex items-center justify-between">
                     <span className="text-[10px] font-black uppercase tracking-[0.5em] text-zinc-600">Unit 0{idx+1}</span>
-                    <div className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-white group-hover:text-black transition-all">
+                    <div className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-white group-hover:text-black transition-all transform-gpu">
                        <ArrowUpRight size={20} style={{ color: accentColor }} className="group-hover:text-black" />
                     </div>
                   </div>
@@ -584,7 +574,6 @@ const App: React.FC = () => {
         </div>
       </section>
 
-      {/* Portfolio Masterpiece Gallery */}
       <section id="portfolio" className="py-24 md:py-56 relative z-10 overflow-hidden bg-black/20">
         <div className="max-w-[1400px] mx-auto px-6 text-center">
           <div className="mb-24 md:mb-40">
@@ -602,11 +591,16 @@ const App: React.FC = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 1, delay: idx * 0.15 }}
-                className="group relative h-[450px] md:h-[750px] rounded-[4rem] overflow-hidden border border-white/5 cursor-pointer shadow-[0_50px_100px_rgba(0,0,0,0.8)]"
+                className="group relative h-[450px] md:h-[750px] rounded-[4rem] overflow-hidden border border-white/5 cursor-pointer shadow-[0_50px_100px_rgba(0,0,0,0.8)] transform-gpu"
                 onClick={() => window.open(project.link, '_blank')}
               >
                 <div className="absolute inset-0 z-0">
-                   <img src={project.imageUrl} className="w-full h-full object-cover grayscale brightness-50 opacity-40 group-hover:opacity-100 group-hover:grayscale-0 group-hover:scale-110 transition-all duration-[1.5s]" alt={project.title} />
+                   <img 
+                     src={project.imageUrl} 
+                     loading="lazy"
+                     className="w-full h-full object-cover grayscale brightness-50 opacity-40 group-hover:opacity-100 group-hover:grayscale-0 group-hover:scale-110 transition-all duration-[1.5s] transform-gpu" 
+                     alt={project.title} 
+                   />
                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent" />
                 </div>
                 <div className="absolute inset-0 z-10 p-10 md:p-20 flex flex-col justify-end text-start">
@@ -623,7 +617,7 @@ const App: React.FC = () => {
                   </p>
                   <div className="flex items-center gap-6 text-[#c5a059] font-bold text-[10px] md:text-[12px] uppercase tracking-[0.6em] group/btn">
                     <span className="border-b-2 border-[#c5a059]/30 pb-2 group-hover/btn:border-[#c5a059] transition-all">Launch Digital Asset</span>
-                    <div className="w-12 h-12 rounded-full border border-[#c5a059]/30 flex items-center justify-center group-hover/btn:bg-[#c5a059] group-hover/btn:text-black transition-all">
+                    <div className="w-12 h-12 rounded-full border border-[#c5a059]/30 flex items-center justify-center group-hover/btn:bg-[#c5a059] group-hover/btn:text-black transition-all transform-gpu">
                        <ExternalLink size={20} />
                     </div>
                   </div>
@@ -634,7 +628,6 @@ const App: React.FC = () => {
         </div>
       </section>
 
-      {/* Secure Inquiry Section */}
       <section id="contact" className="py-32 md:py-64 bg-transparent relative z-10">
         <div className="max-w-[1300px] mx-auto px-6 relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-32 items-start">
@@ -646,7 +639,7 @@ const App: React.FC = () => {
               
               <div className="space-y-20">
                 <div className="flex items-center gap-10 group">
-                  <div className="w-20 h-20 bg-[#0a0a0b] border border-white/10 rounded-full flex items-center justify-center text-[#c5a059] shadow-2xl group-hover:bg-[#c5a059] group-hover:text-black transition-all duration-500">
+                  <div className="w-20 h-20 bg-[#0a0a0b] border border-white/10 rounded-full flex items-center justify-center text-[#c5a059] shadow-2xl group-hover:bg-[#c5a059] group-hover:text-black transition-all duration-500 transform-gpu">
                     <Phone size={36} />
                   </div>
                   <div>
@@ -655,7 +648,7 @@ const App: React.FC = () => {
                   </div>
                 </div>
                 <div className="flex items-center gap-10 group">
-                  <div className="w-20 h-20 bg-[#0a0a0b] border border-white/10 rounded-full flex items-center justify-center text-[#c5a059] shadow-2xl group-hover:bg-[#c5a059] group-hover:text-black transition-all duration-500">
+                  <div className="w-20 h-20 bg-[#0a0a0b] border border-white/10 rounded-full flex items-center justify-center text-[#c5a059] shadow-2xl group-hover:bg-[#c5a059] group-hover:text-black transition-all duration-500 transform-gpu">
                     <Mail size={36} />
                   </div>
                   <div>
@@ -671,7 +664,7 @@ const App: React.FC = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 1 }}
-              className="p-10 md:p-20 rounded-[5rem] bento-card shadow-[0_100px_150px_-50px_rgba(0,0,0,1)] relative overflow-hidden border border-white/10 bg-black/60 shadow-gold-500/5"
+              className="p-10 md:p-20 rounded-[5rem] bento-card shadow-[0_100px_150px_-50px_rgba(0,0,0,1)] relative overflow-hidden border border-white/10 bg-black/60 shadow-gold-500/5 transform-gpu"
             >
               {!isFormSubmitted ? (
                 <form onSubmit={handleFinalSubmit} className="space-y-16 relative z-10">
@@ -714,7 +707,7 @@ const App: React.FC = () => {
                     type="submit"
                     whileHover={{ scale: 1.02, backgroundColor: '#c5a059', color: '#000' }}
                     whileTap={{ scale: 0.98 }}
-                    className="w-full py-8 bg-white text-black font-black uppercase text-xs md:text-sm rounded-full shadow-2xl transition-all tracking-[1em] relative overflow-hidden group"
+                    className="w-full py-8 bg-white text-black font-black uppercase text-xs md:text-sm rounded-full shadow-2xl transition-all tracking-[1em] relative overflow-hidden group transform-gpu"
                   >
                     <span className="relative z-10">{t.contact.send}</span>
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
@@ -725,7 +718,7 @@ const App: React.FC = () => {
                    <motion.div 
                      initial={{ scale: 0, rotate: -180 }} 
                      animate={{ scale: 1, rotate: 0 }} 
-                     className="w-32 h-32 bg-[#c5a059]/10 rounded-full flex items-center justify-center mx-auto mb-12 border border-[#c5a059]/20 shadow-[0_0_50px_rgba(197,160,89,0.2)]"
+                     className="w-32 h-32 bg-[#c5a059]/10 rounded-full flex items-center justify-center mx-auto mb-12 border border-[#c5a059]/20 shadow-[0_0_50px_rgba(197,160,89,0.2)] transform-gpu"
                    >
                       <CheckCircle2 size={60} className="text-[#c5a059]" />
                    </motion.div>
@@ -739,12 +732,11 @@ const App: React.FC = () => {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="py-24 md:py-48 bg-black border-t border-white/5 relative z-10 overflow-hidden">
+      <footer className="py-24 md:py-48 bg-black border-t border-white/5 relative z-10 overflow-hidden transform-gpu">
         <div className="max-w-7xl mx-auto px-6 text-center">
           <div className="flex flex-col items-center gap-20">
             <div className="flex items-center gap-8">
-              <div className="w-16 h-16 bg-gradient-to-br from-[#c5a059] to-[#8a6d3b] rounded-[1.5rem] flex items-center justify-center font-black text-white text-3xl serif-display shadow-2xl">DA</div>
+              <div className="w-16 h-16 bg-gradient-to-br from-[#c5a059] to-[#8a6d3b] rounded-[1.5rem] flex items-center justify-center font-black text-white text-3xl serif-display shadow-2xl transform-gpu">DA</div>
               <div className="text-start leading-none">
                 <span className="text-2xl md:text-5xl font-black tracking-[0.1em] block serif-display uppercase text-white">DA GROUP</span>
                 <span className="text-[12px] md:text-[14px] text-[#c5a059] tracking-[1em] font-bold uppercase mt-3 italic block opacity-80">Gold Tier Ventures</span>
@@ -774,12 +766,11 @@ const App: React.FC = () => {
         </div>
       </footer>
 
-      {/* Floating Action Buttons */}
       <div className="fixed bottom-10 left-10 z-[100] flex flex-col gap-8">
         <motion.a 
           href="tel:0556674329" 
           whileHover={{ scale: 1.1, y: -8, backgroundColor: '#c5a059' }}
-          className="w-14 h-14 md:w-20 md:h-20 bg-[#0a0a0b] border border-white/10 text-white rounded-[2rem] flex items-center justify-center shadow-2xl transition-all backdrop-blur-xl group"
+          className="w-14 h-14 md:w-20 md:h-20 bg-[#0a0a0b] border border-white/10 text-white rounded-[2rem] flex items-center justify-center shadow-2xl transition-all backdrop-blur-xl group transform-gpu"
         >
           <Phone size={30} className="group-hover:text-black transition-colors" />
         </motion.a>
@@ -788,13 +779,12 @@ const App: React.FC = () => {
           target="_blank" 
           rel="noopener noreferrer"
           whileHover={{ scale: 1.1, y: -8 }}
-          className="w-16 h-16 md:w-24 md:h-24 bg-green-600/90 text-white rounded-[2.5rem] flex items-center justify-center shadow-[0_20px_60px_rgba(22,163,74,0.4)] transition-all backdrop-blur-xl group"
+          className="w-16 h-16 md:w-24 md:h-24 bg-green-600/90 text-white rounded-[2.5rem] flex items-center justify-center shadow-[0_20px_60px_rgba(22,163,74,0.4)] transition-all backdrop-blur-xl group transform-gpu"
         >
           <MessageCircle size={40} className="group-hover:scale-110 transition-transform" />
         </motion.a>
       </div>
 
-      {/* Scroll Progress Bar */}
       <motion.div 
         className="fixed top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-transparent via-[#c5a059] to-transparent origin-left z-[100]"
         style={{ scaleX: useSpring(useScroll().scrollYProgress, { stiffness: 100, damping: 30 }) }}
