@@ -41,8 +41,24 @@ interface ExtendedProject extends Project {
   tags: string[];
 }
 
-// אופטימיזציה: הוספת w=800, q=75 ו-fm=webp לכל תמונות הפורטפוליו
+// רשימת הפרויקטים המעודכנת והמורחבת
 const projects: ExtendedProject[] = [
+  {
+    id: 'nashi-culture',
+    title: 'Nashi - תרבות נשית עירונית',
+    description: 'פלטפורמה דיגיטלית מתקדמת המרכזת אירועי תרבות, תכנים וקהילה לנשים. האתר מציג חווית משתמש נקייה, מערכת לוח אירועים אינטראקטיבית ועיצוב מודרני המותאם לקהל היעד.',
+    imageUrl: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&q=75&w=800&fm=webp',
+    link: 'https://nashi-co.com/',
+    tags: ['קהילה', 'פורטל תוכן', 'UX/UI']
+  },
+  {
+    id: 'safed-news',
+    title: 'צפת בתנופה',
+    description: 'פורטל חדשות ותוכן מקומי לעיר צפת. האתר נמצא כעת בשלבי הרצה (Beta) ומספק עדכונים שוטפים, אינדקס עסקים ומידע עירוני בזמן אמת.',
+    imageUrl: 'https://images.unsplash.com/photo-1544013508-22284988770c?auto=format&fit=crop&q=75&w=800&fm=webp',
+    link: 'https://safed-news-production.up.railway.app/',
+    tags: ['חדשות', 'גרסת הרצה', 'Local Media']
+  },
   {
     id: 'helevhitim',
     title: 'מוסדות חלב חיטים',
@@ -218,7 +234,7 @@ const App: React.FC = () => {
       const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
       const genAI = new GoogleGenerativeAI(apiKey);
       
-      const model = genAI.getGenerativeModel({ model: "gemini-3-pro-preview" });
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
       const prompt = `You are the Master Creative Strategist and Lead Software Architect at DA Group. 
       The user vision is: "${aiInput}".
@@ -281,7 +297,7 @@ const App: React.FC = () => {
       <CustomCursor />
       <AtmosphericBackground />
       
-      {/* Background Floating Typography Layers - Increased Opacity for Visibility */}
+      {/* Background Floating Typography Layers */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
          <div className="absolute right-[-3vw] top-0 bottom-0 flex flex-col items-center justify-around opacity-[0.06] select-none font-black text-[10vh] md:text-[18vh] uppercase serif-display italic leading-none pointer-events-none">
             <motion.div 
@@ -417,7 +433,7 @@ const App: React.FC = () => {
                   <h2 className="text-xl md:text-3xl font-black text-white serif-display italic uppercase tracking-wider">
                     {lang === 'he' ? 'אפיון אסטרטגי חכם' : 'Strategic Engine'}
                   </h2>
-                  <p className="text-zinc-500 text-[9px] font-bold uppercase tracking-[0.2em] mt-1 italic">Powered by Gemini 3 Elite</p>
+                  <p className="text-zinc-500 text-[9px] font-bold uppercase tracking-[0.2em] mt-1 italic">Powered by Gemini AI Elite</p>
                 </div>
               </div>
 
@@ -520,10 +536,10 @@ const App: React.FC = () => {
         </div>
       </section>
 
-      <section id="portfolio" className="py-24 md:py-40 relative z-10 overflow-hidden bg-black/40">
+      <section id="portfolio" className="py-24 md:py-40 relative z-10 overflow-hidden bg-black/60 backdrop-blur-sm">
         <div className="max-w-[1400px] mx-auto px-6 text-center">
           <div className="mb-20">
-            <span className="text-[#c5a059] font-black tracking-[1.5em] uppercase text-[9px] mb-6 block italic">Portfolio</span>
+            <span className="text-[#c5a059] font-black tracking-[1.5em] uppercase text-[9px] mb-6 block italic">Elite Portfolio</span>
             <h2 className="text-5xl md:text-[8rem] font-black tracking-tighter text-white serif-display italic leading-[0.9]">
               {t.portfolio.sectionSubtitle}
             </h2>
@@ -537,11 +553,11 @@ const App: React.FC = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.8 }}
-                className="group relative h-[380px] md:h-[650px] rounded-[3rem] overflow-hidden border border-white/10 cursor-pointer shadow-2xl transform-gpu"
+                className="group relative h-[450px] md:h-[600px] rounded-[3rem] overflow-hidden border border-white/10 cursor-pointer shadow-2xl transform-gpu bg-zinc-900/40"
                 onClick={() => window.open(project.link, '_blank')}
               >
                 <div className="absolute inset-0 z-0">
-                   <img src={project.imageUrl} loading="lazy" className="w-full h-full object-cover grayscale-[0.2] brightness-[0.4] opacity-70 group-hover:opacity-100 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-[1s]" alt={project.title} />
+                   <img src={project.imageUrl} loading="lazy" className="w-full h-full object-cover grayscale-[0.2] brightness-[0.4] group-hover:opacity-100 group-hover:grayscale-0 group-hover:scale-105 transition-all duration-[1s]" alt={project.title} />
                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
                 </div>
                 <div className="absolute inset-0 z-10 p-8 md:p-16 flex flex-col justify-end text-start">
@@ -553,11 +569,11 @@ const App: React.FC = () => {
                     ))}
                   </div>
                   <h4 className="text-3xl md:text-6xl font-black serif-display italic text-white mb-4 tracking-tighter group-hover:text-[#c5a059] transition-colors">{project.title}</h4>
-                  <p className="text-zinc-100 text-sm md:text-xl font-normal mb-8 line-clamp-3 italic md:opacity-0 md:group-hover:opacity-100 transform md:translate-y-5 md:group-hover:translate-y-0 transition-all duration-500">
+                  <p className="text-zinc-100 text-sm md:text-xl font-light mb-8 line-clamp-3 italic leading-relaxed opacity-90 group-hover:opacity-100 transition-opacity">
                     {project.description}
                   </p>
                   <div className="flex items-center gap-4 text-[#c5a059] font-black text-[9px] md:text-xs uppercase tracking-[0.5em] group/btn">
-                    <span className="border-b border-[#c5a059]/30 pb-1.5 group-hover/btn:border-[#c5a059] transition-all">Launch Digital Asset</span>
+                    <span className="border-b border-[#c5a059]/30 pb-1.5 group-hover/btn:border-[#c5a059] transition-all">Launch Asset</span>
                     <div className="w-10 h-10 rounded-full border border-[#c5a059]/30 flex items-center justify-center group-hover/btn:bg-[#c5a059] group-hover/btn:text-black transition-all"><ExternalLink size={18} /></div>
                   </div>
                 </div>
@@ -632,7 +648,7 @@ const App: React.FC = () => {
         </p>
       </footer>
 
-      {/* Floating Action Buttons - Optimized Size & Mobile Spacing */}
+      {/* Floating Action Buttons */}
       <div className="fixed bottom-6 left-6 z-[120] flex flex-col gap-4">
         <motion.a 
           href="tel:0556674329" 
