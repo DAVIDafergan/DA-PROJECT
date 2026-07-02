@@ -1,747 +1,442 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence, useScroll, useSpring, useTransform, useMotionValue } from 'framer-motion';
-import { 
-  Globe, 
-  ShoppingBag, 
-  Cpu, 
-  HeartHandshake, 
-  Trello, 
-  Menu, 
-  X, 
-  Phone, 
-  Mail, 
+import React, { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import {
   ArrowUpRight,
   CheckCircle2,
-  ChevronRight,
-  Sparkles,
-  Layers,
-  Rocket,
-  Search,
-  PenTool,
+  Globe,
+  HeartHandshake,
+  Mail,
   MessageCircle,
-  BrainCircuit,
-  Send,
-  Loader2,
-  Lightbulb,
-  Monitor,
-  Eye,
-  FileCode,
-  Maximize2,
-  MousePointer2,
-  ExternalLink,
-  ShieldCheck,
-  Zap
+  Phone,
+  ShoppingBag,
+  Sparkles,
+  Trello,
+  Zap,
+  type LucideIcon,
 } from 'lucide-react';
-// ייבוא הספרייה הרשמית של גוגל
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import { translations } from './translations';
-import { Language, Project } from './types';
 
-interface ExtendedProject extends Project {
-  tags: string[];
-}
+const LOGO_URL = 'https://github.com/user-attachments/assets/a3d40da7-447c-4868-87b2-14861e3c26cd';
 
-// --- רשימת הפרויקטים המלאה והמעודכנת ---
-const projects: ExtendedProject[] = [
+type Service = {
+  title: string;
+  description: string;
+  icon: LucideIcon;
+};
+
+type Project = {
+  title: string;
+  summary: string;
+  imageUrl: string;
+  link: string;
+  highlights: string[];
+};
+
+const services: Service[] = [
   {
-    id: 'nashi-culture',
-    title: 'Nashi - תרבות נשית עירונית',
-    description: 'פלטפורמה דיגיטלית מתקדמת המרכזת אירועי תרבות, תכנים וקהילה לנשים. האתר מציג חווית משתמש נקייה, מערכת לוח אירועים אינטראקטיבית ועיצוב מודרני המותאם לקהל היעד.',
-    imageUrl: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&q=75&w=800&fm=webp',
-    link: 'https://nashi-co.com/',
-    tags: ['קהילה', 'פורטל תוכן', 'UX/UI']
+    title: 'אתרי פרימיום ומערכות מותאמות',
+    description: 'תכנון ופיתוח אתרים ומערכות ברמת ביצוע גבוהה במיוחד, עם חוויית משתמש חדה ויציבה מלאה.',
+    icon: Globe,
   },
   {
-    id: 'safed-news',
-    title: 'צפת בתנופה',
-    description: 'פורטל חדשות ותוכן מקומי לעיר צפת. האתר נמצא כעת בשלבי הרצה (Beta) ומספק עדכונים שוטפים, אינדקס עסקים ומידע עירוני בזמן אמת.',
-    imageUrl: 'https://images.unsplash.com/photo-1544013508-22284988770c?auto=format&fit=crop&q=75&w=800&fm=webp',
-    link: 'https://safed-news-production.up.railway.app/',
-    tags: ['חדשות', 'גרסת הרצה', 'Local Media']
+    title: 'חנויות אונליין שמייצרות מכירות',
+    description: 'עיצוב ופיתוח חנויות יוקרתיות שמבליטות את המותג, מחזקות אמון ומגדילות את יחס ההמרה.',
+    icon: ShoppingBag,
   },
   {
-    id: 'helevhitim',
-    title: 'מוסדות חלב חיטים',
-    description: 'מערכת ניהול מורכבת ופורטל ארגוני חדשני המרכז את כלל פעילות המוסד, כולל מערכות גבייה וניהול תלמידים מתקדמות.',
-    imageUrl: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=75&w=800&fm=webp',
-    link: 'https://www.helevhitim.com/',
-    tags: ['Software', 'Enterprise', 'Management']
+    title: 'ניהול פרויקטים ושיווק ביצועי',
+    description: 'ליווי מקצה לקצה: אסטרטגיה, ניהול תהליכים, שליטה בזמנים ותוצאה עסקית ברורה.',
+    icon: Trello,
   },
   {
-    id: 'jennyskallot',
-    title: 'ג׳ני שמלות כלה',
-    description: 'אתר בוטיק יוקרתי המציג קולקציות שמלות כלה בתצוגה ויזואלית עוצרת נשימה, חווית משתמש פרימיום ומערכת קביעת תורים.',
-    imageUrl: 'https://images.unsplash.com/photo-1596433809252-260c2745dfdd?auto=format&fit=crop&q=75&w=800&fm=webp',
-    link: 'https://jennyskallot.com/',
-    tags: ['Luxury E-comm', 'Fashion', 'UX/UI']
+    title: 'קמפיינים וגיוס קהילות',
+    description: 'מהלך קריאייטיב מלא לגיוס המונים ובניית נוכחות דיגיטלית עם מסר חד וקצב התקדמות מהיר.',
+    icon: HeartHandshake,
   },
-  {
-    id: 'lichvoda',
-    title: 'סטודיו לכבודה',
-    description: 'אתר תדמית יוקרתי לסטודיו לאומנויות הבמה המשלב תנועה ואסתטיקה גבוהה עם גלריות וידאו אינטראקטיביות.',
-    imageUrl: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=75&w=800&fm=webp',
-    link: 'https://lichvoda.co.il/',
-    tags: ['Portfolio', 'Design', 'Art']
-  },
-  {
-    id: 'liveraise',
-    title: 'LiveRaise Production',
-    description: 'מערכת מסכי רתימה דינמית לגיוס המונים בזמן אמת עם גרפיקה חיה המחוברת למסדי נתונים חיצוניים.',
-    imageUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=75&w=800&fm=webp',
-    link: 'https://liveraise-production.up.railway.app/',
-    tags: ['Real-time', 'Fundraising', 'Analytics']
-  }
 ];
 
-const IconMap: Record<string, any> = {
-  Globe, ShoppingBag, Cpu, HeartHandshake, Trello
+const projects: Project[] = [
+  {
+    title: 'Nashi - תרבות נשית עירונית',
+    summary: 'פלטפורמת תוכן וקהילה עם היררכיית מידע ברורה, ניווט מהיר וחוויית מובייל חלקה.',
+    imageUrl: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&q=75&w=1200&fm=webp',
+    link: 'https://nashi-co.com/',
+    highlights: ['ארכיטקטורת תוכן', 'UI נקי', 'ביצועים מהירים'],
+  },
+  {
+    title: 'צפת בתנופה',
+    summary: 'פורטל חדשות מקומי המציג עדכונים בזמן אמת, חוויית קריאה אלגנטית וארגון מידע נגיש.',
+    imageUrl: 'https://images.unsplash.com/photo-1544013508-22284988770c?auto=format&fit=crop&q=75&w=1200&fm=webp',
+    link: 'https://safed-news-production.up.railway.app/',
+    highlights: ['תצוגת כתבות חכמה', 'רספונסיביות מלאה', 'קלות תפעול'],
+  },
+  {
+    title: 'מוסדות חלב חיטים',
+    summary: 'מערכת ארגונית לניהול פעילות מוסדית עם תשתית יציבה וזרימת עבודה יעילה.',
+    imageUrl: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=75&w=1200&fm=webp',
+    link: 'https://www.helevhitim.com/',
+    highlights: ['ניהול תהליכים', 'יציבות מערכתית', 'התאמה ארגונית'],
+  },
+  {
+    title: 'ג׳ני שמלות כלה',
+    summary: 'אתר בוטיק יוקרתי עם דגש על חוויית גלריה, תצוגה ויזואלית חזקה ושפה מותגית מדויקת.',
+    imageUrl: 'https://images.unsplash.com/photo-1596433809252-260c2745dfdd?auto=format&fit=crop&q=75&w=1200&fm=webp',
+    link: 'https://jennyskallot.com/',
+    highlights: ['מיתוג יוקרתי', 'גלריות עשירות', 'קריאות לפעולה'],
+  },
+  {
+    title: 'סטודיו לכבודה',
+    summary: 'אתר תדמית מעוצב לעולם הבמה והתנועה, עם קומפוזיציה נקייה והצגת תוכן מדויקת.',
+    imageUrl: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=75&w=1200&fm=webp',
+    link: 'https://lichvoda.co.il/',
+    highlights: ['שפה אמנותית', 'UX ממוקד', 'תצוגת מדיה נקייה'],
+  },
+  {
+    title: 'LiveRaise Production',
+    summary: 'מערכת רתימה בזמן אמת לקמפיינים, עם תצוגה דינמית ורמת אמינות גבוהה.',
+    imageUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=75&w=1200&fm=webp',
+    link: 'https://liveraise-production.up.railway.app/',
+    highlights: ['Real-time', 'דשבורדים חיים', 'ביצועי עומס'],
+  },
+];
+
+const stats = [
+  { label: 'פרויקטים באוויר', value: '150+' },
+  { label: 'שנות ניסיון', value: '12+' },
+  { label: 'לקוחות חוזרים', value: '93%' },
+  { label: 'זמן תגובה', value: 'עד 24 שעות' },
+];
+
+const sectionReveal = {
+  hidden: { opacity: 0, y: 28 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } },
 };
-
-const ColorMap: Record<string, string> = {
-  web: '#00f2ff',
-  ecommerce: '#ff007f',
-  automation: '#39ff14',
-  fundraising: '#ffaa00',
-  'project-mgmt': '#bc13fe'
-};
-
-const placeholders = {
-  he: [
-    "דוגמה: אני רוצה לבנות פלטפורמת מסחר יוקרתית לשיווק נדל״ן בחו״ל...",
-    "דוגמה: מערכת אוטומציה מלאה למפעל ייצור שכוללת סנכרון מלא...",
-    "דוגמה: חנות בוטיק לתכשיטי יוקרה בייבוא אישי..."
-  ],
-  en: [
-    "Example: I want to build a luxury real estate platform...",
-    "Example: A complete factory automation system...",
-    "Example: A custom boutique jewelry store..."
-  ]
-};
-
-// --- רכיבי עזר ---
-
-const AtmosphericBackground = () => {
-  const { scrollYProgress } = useScroll();
-  const yTranslate = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
-  
-  return (
-    <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden bg-[#0f1115]">
-      <motion.div style={{ y: yTranslate }} className="absolute inset-0 opacity-30 transform-gpu will-change-transform">
-        <img 
-          src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=60&w=1400&fm=webp" 
-          className="w-full h-full object-cover grayscale brightness-[0.6]"
-          alt="Atmosphere"
-        />
-      </motion.div>
-      <div className="absolute inset-0 bg-gradient-to-b from-[#0f1115]/80 via-transparent to-[#0f1115]/80" />
-      <motion.div 
-        animate={{ 
-          x: [0, 150, -150, 0], 
-          y: [0, -80, 80, 0],
-          scale: [1, 1.4, 0.8, 1]
-        }}
-        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-        className="glow-spot w-[600px] h-[600px] bg-[#c5a059] top-[-10%] left-[-10%] opacity-40 blur-[120px] transform-gpu will-change-transform"
-      />
-      <motion.div 
-        animate={{ 
-          x: [0, -200, 200, 0], 
-          y: [0, 150, -150, 0],
-          scale: [1, 0.7, 1.5, 1]
-        }}
-        transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-        className="glow-spot w-[500px] h-[500px] bg-[#0ea5e9] bottom-[-10%] right-[-10%] opacity-35 blur-[120px] transform-gpu will-change-transform"
-      />
-    </div>
-  );
-};
-
-const CustomCursor = () => {
-  const mouseX = useMotionValue(-100);
-  const mouseY = useMotionValue(-100);
-  const ringX = useSpring(mouseX, { stiffness: 150, damping: 20 });
-  const ringY = useSpring(mouseY, { stiffness: 150, damping: 20 });
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      mouseX.set(e.clientX);
-      mouseY.set(e.clientY);
-    };
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
-
-  return (
-    <>
-      <motion.div 
-        className="fixed top-0 left-0 w-8 h-8 border border-[#c5a059] rounded-full pointer-events-none z-[9999] hidden md:block transform-gpu"
-        style={{ x: ringX, y: ringY, translateX: "-50%", translateY: "-50%" }}
-      />
-      <motion.div 
-        className="fixed top-0 left-0 w-1.5 h-1.5 bg-[#c5a059] rounded-full pointer-events-none z-[9999] hidden md:block transform-gpu"
-        style={{ x: mouseX, y: mouseY, translateX: "-50%", translateY: "-50%" }}
-      />
-    </>
-  );
-};
-
-// --- האפליקציה הראשית ---
 
 const App: React.FC = () => {
-  const [lang, setLang] = useState<Language>('he');
-  const [showSplash, setShowSplash] = useState(true); // State למסך הפתיחה
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isFormSubmitted, setIsFormSubmitted] = useState(false);
-  const [aiInput, setAiInput] = useState('');
-  const [aiResponse, setAiResponse] = useState<{ characterization: string, htmlPreview: string } | null>(null);
-  const [isAiLoading, setIsAiLoading] = useState(false);
-  const [placeholderIndex, setPlaceholderIndex] = useState(0);
-  
-  // Form State
   const [contactName, setContactName] = useState('');
   const [contactPhone, setContactPhone] = useState('');
   const [contactMessage, setContactMessage] = useState('');
-  
-  const t = translations[lang];
+  const [isFormSubmitted, setIsFormSubmitted] = useState(false);
 
-  // אפקט טיימר למסך הפתיחה - 2.5 שניות
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowSplash(false);
-    }, 2500);
-    return () => clearTimeout(timer);
+    document.documentElement.lang = 'he';
+    document.documentElement.dir = 'rtl';
   }, []);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setPlaceholderIndex((prev) => (prev + 1) % placeholders[lang].length);
-    }, 8000);
-    return () => clearInterval(interval);
-  }, [lang]);
+  const scrollToSection = (id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
-  useEffect(() => {
-    document.documentElement.dir = lang === 'he' ? 'rtl' : 'ltr';
-    document.documentElement.lang = lang;
-  }, [lang]);
-
-  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const element = document.getElementById(id);
-    if (element) {
-      window.scrollTo({
-        top: element.getBoundingClientRect().top + window.pageYOffset - 80,
-        behavior: 'smooth'
-      });
-    }
-    setIsMenuOpen(false);
-  };
-
-  const generateIdeaBlueprint = async () => {
-    if (!aiInput.trim()) return;
-    setIsAiLoading(true);
-    setAiResponse(null);
-
-    try {
-      const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-      const genAI = new GoogleGenerativeAI(apiKey);
-      
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
-      const prompt = `You are the Master Creative Strategist and Lead Software Architect at DA Group. 
-      The user vision is: "${aiInput}".
-      
-      YOUR TASKS:
-      1. EXPANSION: Analyze this vision and expand it into a high-level technical and business blueprint.
-      2. CHARACTERIZATION (HEBREW): Write a very detailed, professional characterization in Hebrew. Include: Overview, Unique Selling Points, UX/UI Strategy, Technical Architecture, and a 3-Phase Roadmap.
-      3. LUXURY HTML PREVIEW: Generate a full, professional, ultra-luxury landing page (single file).
-         - STYLING: Use Tailwind CSS (via CDN). Pure Black background (#020202), Gold text/accents (#c5a059).
-         - COMPONENTS: Header, Hero with animated text, dynamic 3-column Feature Grid, "The Process" section, and a minimalist footer.
-         - THE MAGIC: Mandatory JavaScript snippet for infinite vertical auto-scroll. The script must smoothly scroll to the bottom, then snap back to top and loop instantly.
-      
-      Output ONLY a valid JSON object:
-      {
-        "characterization": "Detailed Hebrew characterization...",
-        "htmlPreview": "<!DOCTYPE html><html>...</html>"
-      }
-      Strictly NO markdown blocks. Raw JSON only.`;
-
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
-      let text = response.text();
-      
-      text = text.replace(/```json/g, '').replace(/```/g, '').trim();
-      
-      const parsedResult = JSON.parse(text);
-      setAiResponse(parsedResult);
-    } catch (error) {
-      console.error("Blueprint Engine Error:", error);
-      try {
-        const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
-        const fallbackModel = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-        const res = await fallbackModel.generateContent(aiInput);
-        const txt = res.response.text().replace(/```json/g, '').replace(/```/g, '').trim();
-        setAiResponse(JSON.parse(txt));
-      } catch (e) {
-         alert("המערכת עמוסה. נסה שוב בעוד מספר שניות.");
-      }
-    } finally {
-      setIsAiLoading(false);
-    }
-  };
-
-  const submitToExperts = () => {
-    if (!aiResponse) return;
-    const header = lang === 'he' ? '--- אפיון אסטרטגי מלא - DA Group ---' : '--- Strategic Blueprint - DA Group ---';
-    setContactMessage(`${header}\n\n${aiResponse.characterization}\n\nנשלח מ-Blueprint Engine של DA Group`);
-    document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  const handleFinalSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const whatsappUrl = `https://wa.me/972556674329?text=${encodeURIComponent(`*פנייה חדמה מאתר DA Group*\n\n*שם:* ${contactName}\n*טלפון:* ${contactPhone}\n*תוכן:* ${contactMessage}`)}`;
-    window.open(whatsappUrl, '_blank');
+    const text = `*פנייה חדשה מאתר DA*\n\n*שם:* ${contactName}\n*טלפון:* ${contactPhone}\n*תיאור הפרויקט:* ${contactMessage}`;
+    window.open(`https://wa.me/972556674329?text=${encodeURIComponent(text)}`, '_blank');
     setIsFormSubmitted(true);
   };
 
   return (
-    <div className="min-h-screen text-[#ffffff] antialiased overflow-x-hidden selection:bg-[#c5a059] selection:text-black">
-      
-      {/* --- Splash Screen (מסך פתיחה) --- */}
-      <AnimatePresence>
-        {showSplash && (
-          <motion.div
-            key="splash"
-            exit={{ opacity: 0, transition: { duration: 1, ease: "easeInOut" } }} // יציאה חלקה
-            className="fixed inset-0 z-[5000] flex items-center justify-center bg-[#0f1115]"
-          >
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0, letterSpacing: "0.5em" }}
-              animate={{ 
-                scale: 1, 
-                opacity: 1, 
-                letterSpacing: "0.2em",
-                transition: { duration: 1.5, ease: "easeOut" } 
-              }}
-              className="flex flex-col items-center"
-            >
-              <motion.div 
-                className="w-24 h-24 md:w-32 md:h-32 bg-gradient-to-br from-[#c5a059] to-[#8a6d3b] rounded-2xl flex items-center justify-center font-black text-white text-4xl md:text-6xl shadow-[0_0_50px_rgba(197,160,89,0.3)] mb-6"
-                animate={{ 
-                  boxShadow: ["0_0_20px_rgba(197,160,89,0.2)", "0_0_60px_rgba(197,160,89,0.5)", "0_0_20px_rgba(197,160,89,0.2)"]
-                }}
-                transition={{ duration: 2, repeat: Infinity }}
-              >
-                DA
-              </motion.div>
-              <motion.div className="text-center">
-                <h1 className="text-xl md:text-2xl font-black tracking-[0.4em] text-white uppercase serif-display italic">
-                  DA GROUP
-                </h1>
-                <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-[#c5a059] to-transparent mt-3" />
-                <p className="text-[8px] md:text-[10px] text-[#c5a059] font-bold uppercase tracking-[0.5em] mt-2">
-                  Elite Architecture
-                </p>
-              </motion.div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <CustomCursor />
-      <AtmosphericBackground />
-      
-      {/* Background Floating Typography Layers */}
-      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-         <div className="absolute right-[-3vw] top-0 bottom-0 flex flex-col items-center justify-around opacity-[0.08] select-none font-black text-[10vh] md:text-[18vh] uppercase serif-display italic leading-none pointer-events-none">
-            <motion.div 
-              animate={{ y: [0, -1000] }}
-              transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
-              className="flex flex-col gap-32 transform-gpu will-change-transform"
-            >
-              <span className="gold-gradient-text transform rotate-90">EXCELLENCE</span>
-              <span className="gold-gradient-text transform rotate-90">STRATEGY</span>
-              <span className="gold-gradient-text transform rotate-90">INNOVATION</span>
-              <span className="gold-gradient-text transform rotate-90">DA GROUP</span>
-            </motion.div>
-         </div>
+    <div className="relative min-h-screen overflow-x-hidden bg-[#030303] text-white antialiased selection:bg-[#c5a059] selection:text-black">
+      <div className="pointer-events-none fixed inset-0 z-0">
+        <motion.div
+          className="absolute -top-24 right-[10%] h-[30rem] w-[30rem] rounded-full bg-[#c5a059]/15 blur-[120px]"
+          animate={{ x: [0, -40, 10, 0], y: [0, 30, -20, 0] }}
+          transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+        />
+        <motion.div
+          className="absolute bottom-[-10rem] left-[8%] h-[26rem] w-[26rem] rounded-full bg-white/10 blur-[130px]"
+          animate={{ x: [0, 40, -20, 0], y: [0, -20, 20, 0] }}
+          transition={{ duration: 18, repeat: Infinity, ease: 'linear' }}
+        />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.06)_0,transparent_52%)]" />
       </div>
 
-      {/* Main Content Transition */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: !showSplash ? 1 : 0 }}
-        transition={{ duration: 1 }}
-      >
-        <nav className="fixed top-0 w-full z-[90] h-16 md:h-24 flex items-center border-b border-white/10 bg-black/80 backdrop-blur-2xl shadow-2xl transform-gpu">
-            <div className="max-w-[1400px] mx-auto px-5 md:px-12 w-full flex items-center justify-between">
-            <motion.div 
-                initial={{ opacity: 0, x: -20 }} 
-                animate={{ opacity: 1, x: 0 }}
-                className="flex items-center gap-3 cursor-pointer group"
-                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-            >
-                <div className="w-9 h-9 md:w-12 md:h-12 bg-gradient-to-br from-[#c5a059] to-[#8a6d3b] rounded-xl flex items-center justify-center font-black text-white text-base md:text-xl">DA</div>
-                <div className="flex flex-col leading-tight">
-                <span className="text-sm md:text-lg font-black tracking-widest serif-display uppercase text-white group-hover:text-[#c5a059] transition-colors">DA GROUP</span>
-                <span className="text-[7px] md:text-[9px] text-[#c5a059] font-bold uppercase tracking-[0.4em] italic opacity-100">Elite Architecture</span>
-                </div>
-            </motion.div>
-
-            <div className="hidden lg:flex items-center gap-10">
-                {['services', 'portfolio', 'contact'].map((id) => (
-                <a 
-                    key={id} 
-                    href={`#${id}`} 
-                    onClick={(e) => handleNavClick(e, id)}
-                    className="text-[10px] font-black tracking-[0.3em] text-zinc-100 uppercase hover:text-[#c5a059] transition-all relative group"
-                >
-                    {t.nav[id]}
-                    <span className="absolute -bottom-1.5 left-0 w-0 h-[1.5px] bg-[#c5a059] transition-all duration-500 group-hover:w-full" />
-                </a>
-                ))}
-                <button 
-                onClick={() => setLang(l => l === 'he' ? 'en' : 'he')}
-                className="px-5 py-2 border border-[#c5a059]/40 rounded-full text-[9px] font-black text-[#c5a059] hover:bg-[#c5a059] hover:text-black transition-all bg-black/40 backdrop-blur-md"
-                >
-                {lang === 'he' ? 'ENGLISH' : 'עברית'}
-                </button>
+      <header className="fixed top-0 z-50 w-full border-b border-white/10 bg-black/75 backdrop-blur-xl">
+        <div className="mx-auto flex h-20 w-full max-w-[1200px] items-center justify-between px-6">
+          <button onClick={() => scrollToSection('home')} className="flex items-center gap-3">
+            <img src={LOGO_URL} alt="DA logo" className="h-10 w-auto rounded-md border border-white/15 bg-black/50 object-cover" />
+            <div className="text-right">
+              <p className="text-sm font-black tracking-[0.25em] text-white">DA GROUP</p>
+              <p className="text-[10px] font-bold tracking-[0.32em] text-[#c5a059]">PREMIUM DIGITAL</p>
             </div>
+          </button>
 
-            <div className="lg:hidden flex items-center gap-3">
-                <button onClick={() => setLang(l => l === 'he' ? 'en' : 'he')} className="text-[#c5a059] text-[10px] font-black bg-white/5 px-2.5 py-1 rounded-full border border-[#c5a059]/30">{lang === 'he' ? 'EN' : 'עב'}</button>
-                <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="text-white p-2 bg-white/5 rounded-lg">
-                    {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-                </button>
-            </div>
-            </div>
-        </nav>
-
-        <AnimatePresence>
-            {isMenuOpen && (
-            <motion.div 
-                initial={{ x: '100%' }}
-                animate={{ x: 0 }}
-                exit={{ x: '100%' }}
-                transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-                className="fixed inset-y-0 right-0 w-full z-[100] bg-[#050507] backdrop-blur-3xl border-l border-white/10 flex flex-col p-10 lg:hidden transform-gpu"
-            >
-                <div className="flex justify-end mb-16">
-                <button onClick={() => setIsMenuOpen(false)} className="text-[#c5a059] p-2 bg-white/5 rounded-full"><X size={32} /></button>
-                </div>
-                <div className="flex flex-col gap-10 text-center">
-                {['services', 'portfolio', 'contact'].map((id) => (
-                    <a 
-                    key={id} 
-                    href={`#${id}`} 
-                    onClick={(e) => handleNavClick(e, id)}
-                    className="text-4xl font-black tracking-tighter text-white uppercase serif-display italic hover:text-[#c5a059] transition-colors"
-                    >
-                    {t.nav[id]}
-                    </a>
-                ))}
-                </div>
-            </motion.div>
-            )}
-        </AnimatePresence>
-
-        <section id="home" className="relative min-h-[90vh] flex flex-col items-center justify-center pt-24 pb-16 overflow-hidden">
-            <div className="max-w-[1200px] mx-auto px-6 w-full relative z-10 text-center">
-            <motion.div 
-                initial={{ opacity: 0, y: 15 }} 
-                animate={{ opacity: 1, y: 0 }}
-                className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/10 border border-[#c5a059]/40 rounded-full mb-10 backdrop-blur-md shadow-lg"
-            >
-                <Sparkles size={14} className="text-[#c5a059] animate-pulse" />
-                <span className="text-[10px] md:text-xs font-black tracking-[0.4em] text-[#c5a059] uppercase">{t.hero.tagline}</span>
-            </motion.div>
-            
-            <div className="mb-10">
-                <motion.h1 
-                initial={{ opacity: 0, y: 30 }} 
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                className="text-4xl md:text-[8rem] font-black leading-[0.95] tracking-tighter text-white serif-display italic transform-gpu"
-                >
-                <span className="block mb-3">{lang === 'he' ? 'ניהול' : 'DA'}</span>
-                <span className="gold-gradient-text block">
-                    {lang === 'he' ? 'פרויקטים ויזמות' : 'STRATEGY'}
-                </span>
-                </motion.h1>
-            </div>
-            
-            <motion.p 
-                initial={{ opacity: 0 }} 
-                animate={{ opacity: 1 }} 
-                transition={{ delay: 0.6, duration: 0.8 }}
-                className="text-base md:text-2xl text-zinc-100 mb-14 max-w-3xl mx-auto leading-relaxed font-light italic"
-            >
-                {t.hero.subtitle}
-            </motion.p>
-
-            <motion.div 
-                initial={{ opacity: 0, scale: 0.99 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="w-full max-w-4xl mx-auto p-[1px] rounded-[2.5rem] bg-gradient-to-br from-[#c5a059]/80 via-white/20 to-[#c5a059]/80 shadow-2xl transform-gpu"
-            >
-                <div className="bg-[#1a1d23]/95 backdrop-blur-3xl rounded-[2.45rem] p-6 md:p-14 border border-white/10 relative overflow-hidden text-start">
-                <div className="flex items-center gap-4 mb-8">
-                    <div className="w-12 h-12 rounded-xl bg-[#c5a059]/20 flex items-center justify-center text-[#c5a059] border border-[#c5a059]/40">
-                    <BrainCircuit size={28} className={isAiLoading ? 'animate-spin' : ''} />
-                    </div>
-                    <div>
-                    <h2 className="text-xl md:text-3xl font-black text-white serif-display italic uppercase tracking-wider">
-                        {lang === 'he' ? 'אפיון אסטרטגי חכם' : 'Strategic Engine'}
-                    </h2>
-                    <p className="text-[#c5a059]/80 text-[9px] font-bold uppercase tracking-[0.2em] mt-1 italic">Powered by Gemini AI Elite</p>
-                    </div>
-                </div>
-
-                <div className="relative group mb-8">
-                    <textarea 
-                    value={aiInput}
-                    onChange={(e) => setAiInput(e.target.value)}
-                    placeholder={placeholders[lang][placeholderIndex]}
-                    className="w-full bg-white/[0.08] border-2 border-white/10 rounded-[1.8rem] p-6 md:p-10 text-white text-base md:text-2xl font-medium italic focus:border-[#c5a059]/60 outline-none min-h-[180px] resize-none pr-8 shadow-inner placeholder:text-zinc-500 transition-all"
-                    />
-                    <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={generateIdeaBlueprint}
-                    disabled={isAiLoading || !aiInput.trim()}
-                    className="absolute bottom-6 right-6 w-14 h-14 bg-[#c5a059] text-black rounded-full flex items-center justify-center shadow-2xl disabled:opacity-20 transform-gpu"
-                    >
-                    {isAiLoading ? <Loader2 size={24} className="animate-spin" /> : <Send size={24} />}
-                    </motion.button>
-                </div>
-
-                <AnimatePresence>
-                    {aiResponse && (
-                    <motion.div 
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-10"
-                    >
-                        <div className="flex flex-col justify-between p-8 rounded-[2rem] bg-white/[0.05] border border-[#c5a059]/40">
-                        <div>
-                            <div className="text-[#c5a059] text-[9px] font-black uppercase tracking-[0.4em] mb-6 flex items-center gap-2">
-                            <ShieldCheck size={14} /> Full Characterization
-                            </div>
-                            <div className="text-white text-base md:text-lg font-medium leading-relaxed italic mb-8 whitespace-pre-wrap max-h-[300px] overflow-y-auto custom-scrollbar pr-3">
-                            {aiResponse.characterization}
-                            </div>
-                        </div>
-                        <button 
-                            onClick={submitToExperts}
-                            className="w-full py-5 bg-[#c5a059] text-black font-black uppercase text-[10px] rounded-full flex items-center justify-center gap-3 shadow-xl tracking-[0.2em] hover:bg-white transition-all"
-                        >
-                            <Rocket size={18} /> {lang === 'he' ? 'שלח לביצוע ב-DA GROUP' : 'EXECUTE VISION'}
-                        </button>
-                        </div>
-
-                        <div className="rounded-[2rem] border border-white/20 bg-black overflow-hidden relative group/preview h-[350px] md:h-full">
-                            <iframe title="Preview" srcDoc={aiResponse.htmlPreview} className="w-full h-full border-none pointer-events-none" />
-                            <div className="absolute inset-0 bg-black/10 flex items-center justify-center opacity-0 group-hover/preview:opacity-100 transition-opacity">
-                                <div className="bg-[#c5a059] text-black px-6 py-3 rounded-full text-[9px] font-black uppercase tracking-widest shadow-2xl">Interactive UI Active</div>
-                            </div>
-                        </div>
-                    </motion.div>
-                    )}
-                </AnimatePresence>
-                </div>
-            </motion.div>
-            </div>
-        </section>
-
-        <section id="services" className="py-24 md:py-40 px-6 relative z-10">
-            <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-24 transform-gpu">
-                <span className="text-[#c5a059] font-black tracking-[1em] uppercase text-[9px] mb-5 block italic">Ecosystem</span>
-                <h2 className="text-4xl md:text-7xl font-black text-white serif-display italic leading-tight uppercase tracking-tighter">
-                {t.services.sectionSubtitle}
-                </h2>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                {t.services.items.map((service: any, idx: number) => {
-                const Icon = IconMap[service.icon];
-                const accentColor = ColorMap[service.id] || '#c5a059';
-                return (
-                    <motion.div
-                    key={service.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: idx * 0.05 }}
-                    className="p-10 rounded-[2.5rem] border border-white/10 bg-[#161a20]/80 backdrop-blur-3xl hover:border-[#c5a059]/60 transition-all transform-gpu group"
-                    >
-                    <div 
-                        className="w-16 h-16 rounded-2xl flex items-center justify-center mb-8 shadow-xl border border-white/10 group-hover:scale-110 transition-transform"
-                        style={{ backgroundColor: accentColor + '20', color: accentColor }}
-                    >
-                        <Icon size={32} />
-                    </div>
-                    <h4 className="text-2xl md:text-3xl font-black mb-6 text-white serif-display italic tracking-tight">{service.title}</h4>
-                    <p className="text-zinc-100 text-sm md:text-lg font-light leading-relaxed mb-8 italic">
-                        {service.description}
-                    </p>
-                    <div className="pt-6 border-t border-white/10 flex items-center justify-between">
-                        <span className="text-[9px] font-black uppercase tracking-[0.4em] text-zinc-500">Unit 0{idx+1}</span>
-                        <ArrowUpRight size={18} style={{ color: accentColor }} className="opacity-60 group-hover:opacity-100 transition-opacity" />
-                    </div>
-                    </motion.div>
-                );
-                })}
-            </div>
-            </div>
-        </section>
-
-        <section id="portfolio" className="py-24 md:py-40 relative z-10 overflow-hidden bg-[#0f1115]/80 backdrop-blur-md">
-            <div className="max-w-[1400px] mx-auto px-6 text-center">
-            <div className="mb-20">
-                <span className="text-[#c5a059] font-black tracking-[1.5em] uppercase text-[9px] mb-6 block italic">Elite Portfolio</span>
-                <h2 className="text-5xl md:text-[8rem] font-black tracking-tighter text-white serif-display italic leading-[0.9]">
-                {t.portfolio.sectionSubtitle}
-                </h2>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-14">
-                {projects.map((project, idx) => (
-                <motion.div
-                    key={project.id}
-                    initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.8 }}
-                    className="group relative h-[450px] md:h-[600px] rounded-[3rem] overflow-hidden border border-white/20 cursor-pointer shadow-2xl transform-gpu bg-white/5 backdrop-blur-md"
-                    onClick={() => window.open(project.link, '_blank')}
-                >
-                    <div className="absolute inset-0 z-0">
-                    <img src={project.imageUrl} loading="lazy" className="w-full h-full object-cover grayscale-[0.1] brightness-[0.5] group-hover:brightness-[0.8] group-hover:scale-105 transition-all duration-700" alt={project.title} />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
-                    </div>
-                    
-                    {/* תוכן הפרויקט - שיפור קריאות */}
-                    <div className="absolute inset-0 z-10 p-8 md:p-12 flex flex-col justify-end text-start">
-                    <div className="relative z-20">
-                        <div className="flex flex-wrap gap-2 mb-4">
-                            {project.tags.map(tag => (
-                            <span key={tag} className="text-[10px] font-bold uppercase tracking-widest text-white px-4 py-1.5 bg-[#c5a059]/90 rounded-full border border-[#c5a059]/40 shadow-lg">
-                                {tag}
-                            </span>
-                            ))}
-                        </div>
-                        <h4 className="text-3xl md:text-5xl font-black serif-display italic text-white mb-4 tracking-tighter drop-shadow-lg">{project.title}</h4>
-                        
-                        {/* תיאור עם רקע מטושטש לקריאות מקסימלית */}
-                        <div className="bg-black/40 backdrop-blur-lg p-6 rounded-2xl border border-white/10 mb-6 group-hover:bg-black/60 transition-colors">
-                            <p className="text-zinc-100 text-sm md:text-lg font-normal line-clamp-3 leading-relaxed italic">
-                                {project.description}
-                            </p>
-                        </div>
-
-                        {/* כפתור הנעה לפעולה בולט */}
-                        <div className="inline-flex items-center gap-4 bg-white/10 hover:bg-[#c5a059] hover:text-black border border-white/20 hover:border-[#c5a059] px-6 py-3 rounded-full transition-all duration-300 group/btn">
-                            <span className="font-black text-[10px] md:text-xs uppercase tracking-[0.3em]">View Case Study</span>
-                            <ExternalLink size={16} />
-                        </div>
-                    </div>
-                    </div>
-                </motion.div>
-                ))}
-            </div>
-            </div>
-        </section>
-
-        <section id="contact" className="py-28 md:py-56 bg-transparent relative z-10 px-6">
-            <div className="max-w-[1300px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
-            <div className="text-center lg:text-start">
-                <span className="text-[#c5a059] font-black tracking-[1.5em] uppercase text-[9px] mb-12 block italic">Secure Engagement</span>
-                <h3 className="text-5xl md:text-[7.5rem] font-black mb-14 text-white serif-display italic tracking-tighter uppercase leading-[0.85]">
-                {t.contact.sectionSubtitle}
-                </h3>
-                
-                <div className="space-y-12">
-                    <div className="flex items-center justify-center lg:justify-start gap-6 group">
-                    <div className="w-14 h-14 bg-[#c5a059] text-black rounded-full flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform duration-500"><Phone size={24} /></div>
-                    <div className="text-start leading-tight">
-                        <p className="text-zinc-500 text-[8px] uppercase tracking-[0.4em] mb-1.5 font-black italic">Voice Line</p>
-                        <p className="text-xl md:text-4xl font-black text-white tabular-nums tracking-tighter">055-667-4329</p>
-                    </div>
-                    </div>
-                    <div className="flex items-center justify-center lg:justify-start gap-6 group">
-                    <div className="w-14 h-14 bg-white text-black rounded-full flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform duration-500"><Mail size={24} /></div>
-                    <div className="text-start leading-tight">
-                        <p className="text-zinc-500 text-[8px] uppercase tracking-[0.4em] mb-1.5 font-black italic">Official Mail</p>
-                        <p className="text-xl md:text-4xl font-black text-white serif-display italic tracking-tighter uppercase">DA@101.ORG.IL</p>
-                    </div>
-                    </div>
-                </div>
-            </div>
-
-            <div className="bg-[#1a1d23]/95 p-8 md:p-16 rounded-[3.5rem] border border-white/20 shadow-3xl backdrop-blur-2xl">
-                {!isFormSubmitted ? (
-                <form onSubmit={handleFinalSubmit} className="space-y-12 relative z-10">
-                    <div className="space-y-2">
-                    <label className="text-[9px] font-black text-zinc-500 uppercase tracking-[0.6em] ml-1.5">{t.contact.name}</label>
-                    <input value={contactName} onChange={(e) => setContactName(e.target.value)} required className="w-full bg-transparent border-b border-white/20 py-4 text-xl md:text-4xl outline-none focus:border-[#c5a059] transition-all text-white serif-display italic placeholder:text-zinc-800" placeholder="דוד אפרגן" />
-                    </div>
-                    <div className="space-y-2">
-                    <label className="text-[9px] font-black text-zinc-500 uppercase tracking-[0.6em] ml-1.5">{t.contact.phone}</label>
-                    <input type="tel" value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} required className="w-full bg-transparent border-b border-white/20 py-4 text-xl md:text-4xl outline-none focus:border-[#c5a059] transition-all text-white tabular-nums placeholder:text-zinc-800" placeholder="050-000-0000" />
-                    </div>
-                    <div className="space-y-2">
-                    <label className="text-[9px] font-black text-zinc-500 uppercase tracking-[0.6em] ml-1.5">{t.contact.message}</label>
-                    <textarea value={contactMessage} onChange={(e) => setContactMessage(e.target.value)} required className="w-full bg-transparent border-b border-white/20 py-4 text-xl md:text-4xl outline-none resize-none focus:border-[#c5a059] transition-all text-white serif-display italic placeholder:text-zinc-800" rows={1} placeholder="..." />
-                    </div>
-                    <button type="submit" className="w-full py-7 bg-white text-black font-black uppercase text-[11px] rounded-full shadow-2xl hover:bg-[#c5a059] transition-all tracking-[1em] mt-8">{t.contact.send}</button>
-                </form>
-                ) : (
-                <div className="text-center py-20">
-                    <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="w-24 h-24 bg-[#c5a059]/20 rounded-full flex items-center justify-center mx-auto mb-10 border border-[#c5a059]/40"><CheckCircle2 size={48} className="text-[#c5a059]" /></motion.div>
-                    <h4 className="text-3xl md:text-5xl font-black text-white serif-display italic mb-6 tracking-tight">{t.contact.success}</h4>
-                    <button onClick={() => setIsFormSubmitted(false)} className="text-[#c5a059] text-[9px] font-black uppercase tracking-widest mt-6 underline underline-offset-8">Send New Inquiry</button>
-                </div>
-                )}
-            </div>
-            </div>
-        </section>
-
-        <footer className="py-20 md:py-32 border-t border-white/10 bg-black text-center relative z-10">
-            <div className="w-16 h-16 bg-gradient-to-br from-[#c5a059] to-[#8a6d3b] rounded-2xl mx-auto mb-10 flex items-center justify-center font-black text-white text-2xl shadow-2xl transform-gpu">DA</div>
-            <p className="text-zinc-500 font-black tracking-[0.8em] uppercase text-[10px] mb-12 opacity-80">DA GROUP • ELITE DIGITAL ARCHITECTURE</p>
-            <div className="flex justify-center gap-10 opacity-60 grayscale mb-16">
-            <ShieldCheck size={24} /> <Globe size={24} /> <Zap size={24} />
-            </div>
-            <p className="text-zinc-600 text-[9px] font-bold tracking-[0.5em] uppercase">
-            © {new Date().getFullYear()} DA PROJECT MANAGEMENT & ENTREPRENEURSHIP. ALL RIGHTS RESERVED.
-            </p>
-        </footer>
-
-        {/* Floating Action Buttons */}
-        <div className="fixed bottom-6 left-6 z-[120] flex flex-col gap-4">
-            <motion.a 
-            href="tel:0556674329" 
-            whileHover={{ scale: 1.1, y: -4 }} 
-            className="w-12 h-12 md:w-16 md:h-16 bg-white border border-[#c5a059]/40 text-black rounded-2xl flex items-center justify-center shadow-xl backdrop-blur-md transform-gpu"
-            >
-            <Phone size={24} />
-            </motion.a>
-            <motion.a 
-            href="https://wa.me/972556674329" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            whileHover={{ scale: 1.1, y: -4 }} 
-            className="w-16 h-16 md:w-20 md:h-20 bg-[#25D366] text-white rounded-[1.8rem] flex items-center justify-center shadow-2xl backdrop-blur-md transform-gpu"
-            >
-            <MessageCircle size={36} />
-            </motion.a>
+          <nav className="hidden items-center gap-8 md:flex">
+            {[
+              ['services', 'שירותים'],
+              ['portfolio', 'עבודות'],
+              ['contact', 'יצירת קשר'],
+            ].map(([id, title]) => (
+              <button
+                key={id}
+                onClick={() => scrollToSection(id)}
+                className="text-xs font-black tracking-[0.3em] text-zinc-200 transition hover:text-[#c5a059]"
+              >
+                {title}
+              </button>
+            ))}
+          </nav>
         </div>
+      </header>
 
-        <motion.div 
-            className="fixed top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-transparent via-[#c5a059] to-transparent z-[200] origin-left" 
-            style={{ scaleX: useSpring(useScroll().scrollYProgress, { stiffness: 150, damping: 30 }) }} 
-        />
-      </motion.div>
+      <main className="relative z-10 pt-24">
+        <section id="home" className="mx-auto flex min-h-[88vh] w-full max-w-[1200px] flex-col items-center justify-center px-6 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7 }}
+            className="inline-flex items-center gap-2 rounded-full border border-[#c5a059]/40 bg-white/5 px-4 py-1.5"
+          >
+            <Sparkles size={14} className="text-[#c5a059]" />
+            <span className="text-[10px] font-black tracking-[0.35em] text-[#c5a059]">LUXURY WEB EXPERIENCE</span>
+          </motion.div>
+
+          <motion.img
+            initial={{ opacity: 0, scale: 0.92 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.1 }}
+            src={LOGO_URL}
+            alt="DA"
+            className="mt-8 h-auto w-full max-w-md rounded-2xl border border-white/10 bg-black/40 p-2"
+          />
+
+          <motion.h1
+            initial={{ opacity: 0, y: 22 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="mt-8 max-w-4xl text-4xl font-black leading-tight md:text-7xl"
+          >
+            עיצוב שחור יוקרתי, מהיר וחלק
+            <span className="mt-2 block text-[#c5a059]">שגורם למותג שלכם להיראות כמו ליגה אחרת</span>
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.35 }}
+            className="mt-6 max-w-3xl text-base leading-relaxed text-zinc-200 md:text-2xl"
+          >
+            אנחנו מתכננים חוויה דיגיטלית מחדש מהיסוד: שפה ויזואלית חזקה, תנועה אלגנטית וביצועים גבוהים, כדי שכל לקוח יבין מיד שאתם ברמה אחרת.
+          </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.45 }}
+            className="mt-10 flex flex-wrap items-center justify-center gap-4"
+          >
+            <button
+              onClick={() => scrollToSection('portfolio')}
+              className="rounded-full bg-[#c5a059] px-8 py-4 text-xs font-black tracking-[0.28em] text-black transition hover:bg-white"
+            >
+              צפו בעבודות
+            </button>
+            <button
+              onClick={() => scrollToSection('contact')}
+              className="rounded-full border border-white/25 bg-white/5 px-8 py-4 text-xs font-black tracking-[0.28em] text-white transition hover:border-[#c5a059] hover:text-[#c5a059]"
+            >
+              נתחיל פרויקט
+            </button>
+          </motion.div>
+
+          <div className="mt-16 grid w-full grid-cols-2 gap-4 md:grid-cols-4">
+            {stats.map((stat) => (
+              <div key={stat.label} className="rounded-2xl border border-white/10 bg-black/40 p-4 text-center backdrop-blur">
+                <p className="text-xl font-black text-[#c5a059] md:text-3xl">{stat.value}</p>
+                <p className="mt-1 text-[11px] font-bold text-zinc-300">{stat.label}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <motion.section
+          id="services"
+          variants={sectionReveal}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: '-80px' }}
+          className="mx-auto w-full max-w-[1200px] px-6 py-24"
+        >
+          <p className="text-center text-[10px] font-black tracking-[0.5em] text-[#c5a059]">SERVICES</p>
+          <h2 className="mt-4 text-center text-3xl font-black md:text-6xl">פתרונות שמייצרים נוכחות ותוצאות</h2>
+          <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2">
+            {services.map((service, idx) => {
+              const Icon = service.icon;
+              return (
+                <motion.article
+                  key={service.title}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: idx * 0.08 }}
+                  className="rounded-3xl border border-white/10 bg-[#0d0d0d]/85 p-8"
+                >
+                  <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-[#c5a059]/15 text-[#c5a059]">
+                    <Icon size={24} />
+                  </div>
+                  <h3 className="text-2xl font-black">{service.title}</h3>
+                  <p className="mt-4 text-zinc-300">{service.description}</p>
+                </motion.article>
+              );
+            })}
+          </div>
+        </motion.section>
+
+        <motion.section
+          id="portfolio"
+          variants={sectionReveal}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: '-80px' }}
+          className="bg-black/45 px-6 py-24"
+        >
+          <div className="mx-auto w-full max-w-[1280px]">
+            <p className="text-center text-[10px] font-black tracking-[0.5em] text-[#c5a059]">PORTFOLIO</p>
+            <h2 className="mt-4 text-center text-3xl font-black md:text-6xl">העבודות שלנו מוצגות ברור ומדויק</h2>
+            <p className="mx-auto mt-5 max-w-3xl text-center text-zinc-300 md:text-xl">
+              כל פרויקט מוצג עם סיפור קצר, חוזקות מרכזיות וקישור ישיר לצפייה — בלי עומס ובלי רעש מיותר.
+            </p>
+
+            <div className="mt-14 grid grid-cols-1 gap-8 md:grid-cols-2">
+              {projects.map((project, idx) => (
+                <motion.a
+                  key={project.title}
+                  href={project.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  initial={{ opacity: 0, y: 22 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: idx * 0.06 }}
+                  className="group overflow-hidden rounded-3xl border border-white/10 bg-[#090909]"
+                >
+                  <div className="relative h-64 overflow-hidden">
+                    <img
+                      src={project.imageUrl}
+                      alt={project.title}
+                      loading="lazy"
+                      className="h-full w-full object-cover brightness-75 transition duration-700 group-hover:scale-105 group-hover:brightness-95"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/25 to-transparent" />
+                  </div>
+                  <div className="p-7">
+                    <h3 className="text-2xl font-black">{project.title}</h3>
+                    <p className="mt-3 text-zinc-300">{project.summary}</p>
+                    <ul className="mt-4 flex flex-wrap gap-2">
+                      {project.highlights.map((item) => (
+                        <li key={item} className="rounded-full border border-[#c5a059]/40 bg-[#c5a059]/10 px-3 py-1 text-xs font-bold text-[#f3d9a7]">
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="mt-6 inline-flex items-center gap-2 text-sm font-black text-[#c5a059]">
+                      לצפייה בפרויקט <ArrowUpRight size={16} />
+                    </div>
+                  </div>
+                </motion.a>
+              ))}
+            </div>
+          </div>
+        </motion.section>
+
+        <motion.section
+          id="contact"
+          variants={sectionReveal}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: '-80px' }}
+          className="mx-auto grid w-full max-w-[1200px] grid-cols-1 gap-12 px-6 py-24 lg:grid-cols-2"
+        >
+          <div>
+            <p className="text-[10px] font-black tracking-[0.5em] text-[#c5a059]">CONTACT</p>
+            <h2 className="mt-4 text-4xl font-black leading-tight md:text-6xl">בואו נהפוך את הנוכחות הדיגיטלית שלכם לנכס אמיתי</h2>
+            <p className="mt-6 text-zinc-300 md:text-xl">
+              משאירים פרטים, מקבלים שיחת אסטרטגיה ממוקדת, ומתקדמים לפתרון שנבנה בדיוק לעסק שלכם.
+            </p>
+
+            <div className="mt-10 space-y-5">
+              <a href="tel:0556674329" className="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/5 p-4">
+                <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#c5a059] text-black"><Phone size={18} /></span>
+                <span className="font-bold">055-667-4329</span>
+              </a>
+              <a href="mailto:DA@101.ORG.IL" className="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/5 p-4">
+                <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white text-black"><Mail size={18} /></span>
+                <span className="font-bold">DA@101.ORG.IL</span>
+              </a>
+            </div>
+          </div>
+
+          <div className="rounded-3xl border border-white/10 bg-[#0b0b0b]/90 p-8">
+            {!isFormSubmitted ? (
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div>
+                  <label className="mb-2 block text-xs font-black tracking-[0.25em] text-zinc-400">שם מלא</label>
+                  <input
+                    value={contactName}
+                    onChange={(e) => setContactName(e.target.value)}
+                    required
+                    className="w-full rounded-xl border border-white/15 bg-black/40 px-4 py-3 text-white outline-none transition focus:border-[#c5a059]"
+                    placeholder="דוד אפרגן"
+                  />
+                </div>
+                <div>
+                  <label className="mb-2 block text-xs font-black tracking-[0.25em] text-zinc-400">טלפון</label>
+                  <input
+                    type="tel"
+                    value={contactPhone}
+                    onChange={(e) => setContactPhone(e.target.value)}
+                    required
+                    className="w-full rounded-xl border border-white/15 bg-black/40 px-4 py-3 text-white outline-none transition focus:border-[#c5a059]"
+                    placeholder="050-000-0000"
+                  />
+                </div>
+                <div>
+                  <label className="mb-2 block text-xs font-black tracking-[0.25em] text-zinc-400">ספרו לנו על העסק</label>
+                  <textarea
+                    value={contactMessage}
+                    onChange={(e) => setContactMessage(e.target.value)}
+                    required
+                    rows={5}
+                    className="w-full resize-none rounded-xl border border-white/15 bg-black/40 px-4 py-3 text-white outline-none transition focus:border-[#c5a059]"
+                    placeholder="מה המטרות שלכם? איזה סוג אתר או מערכת אתם רוצים?"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="w-full rounded-full bg-[#c5a059] px-6 py-4 text-sm font-black tracking-[0.25em] text-black transition hover:bg-white"
+                >
+                  שליחה לוואטסאפ
+                </button>
+              </form>
+            ) : (
+              <div className="py-12 text-center">
+                <div className="mx-auto inline-flex h-16 w-16 items-center justify-center rounded-full border border-[#c5a059]/50 bg-[#c5a059]/15 text-[#c5a059]">
+                  <CheckCircle2 size={34} />
+                </div>
+                <h3 className="mt-6 text-2xl font-black">הפנייה נשלחה בהצלחה</h3>
+                <p className="mt-3 text-zinc-300">ניצור איתכם קשר בהקדם ונבנה יחד את השלב הבא.</p>
+                <button
+                  onClick={() => setIsFormSubmitted(false)}
+                  className="mt-8 text-sm font-bold text-[#c5a059] underline underline-offset-4"
+                >
+                  לשלוח פנייה נוספת
+                </button>
+              </div>
+            )}
+          </div>
+        </motion.section>
+      </main>
+
+      <footer className="relative z-10 border-t border-white/10 bg-black px-6 py-12 text-center">
+        <div className="mx-auto flex w-full max-w-[1200px] flex-col items-center gap-5">
+          <img src={LOGO_URL} alt="DA" className="h-10 w-auto rounded-md border border-white/10 bg-black/50" />
+          <p className="text-xs font-black tracking-[0.3em] text-zinc-300">DA PROJECT MANAGEMENT & ENTREPRENEURSHIP</p>
+          <div className="flex items-center gap-6 text-zinc-500">
+            <Zap size={18} />
+            <MessageCircle size={18} />
+            <Sparkles size={18} />
+          </div>
+          <p className="text-[11px] text-zinc-500">© {new Date().getFullYear()} כל הזכויות שמורות</p>
+        </div>
+      </footer>
     </div>
   );
 };
