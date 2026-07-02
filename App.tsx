@@ -114,6 +114,22 @@ const projects: Project[] = [
     link: 'https://liveraise-production.up.railway.app/',
     highlights: ['Real-time', 'דשבורדים חיים', 'ביצועי עומס'],
   },
+  {
+    title: 'דילים',
+    summary: 'פלטפורמה לחיבור סוכני נסיעות עם לקוחות בקלות',
+    imageUrl: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&q=75&w=1200&fm=webp',
+    imageAlt: 'צילום מסך של פלטפורמת עסקים',
+    link: 'https://dealim.org/',
+    highlights: ['חיבור סוכנים', 'ממשק חכם', 'ניהול קל'],
+  },
+  {
+    title: 'חותם',
+    summary: 'פלטפורמה למכירת מוצרי קודש ואביזרים יוקרתיים',
+    imageUrl: 'https://images.unsplash.com/photo-1556656793-08538906a9f8?auto=format&fit=crop&q=75&w=1200&fm=webp',
+    imageAlt: 'צילום מסך של חנות אונליין',
+    link: 'https://www.hotam.shop/',
+    highlights: ['חנות אונליין', 'מוצרי קודש', 'עיצוב יוקרתי'],
+  },
 ];
 
 const referenceWebsites: ReferenceWebsite[] = [
