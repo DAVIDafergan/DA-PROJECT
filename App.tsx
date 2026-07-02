@@ -206,12 +206,8 @@ const App: React.FC = () => {
 
       <header className="fixed top-0 z-50 w-full border-b border-white/10 bg-black/75 backdrop-blur-xl">
         <div className="mx-auto flex h-20 w-full max-w-[1200px] items-center justify-between px-6">
-          <a href="#home" onClick={(e) => handleNavLink(e, 'home')} aria-label="חזרה לראש העמוד" className="group flex cursor-pointer items-center gap-3 rounded-xl px-2 py-1 transition hover:bg-white/5">
-            <img src={logoSrc} onError={handleLogoError} alt="DA Group Logo" className="h-10 w-auto rounded-md border border-white/15 bg-black/50 object-contain" />
-            <div className="text-right">
-              <p className="text-sm font-black tracking-[0.25em] text-white transition group-hover:text-[#f3d9a7]">DA GROUP</p>
-              <p className="text-[10px] font-bold tracking-[0.32em] text-[#c5a059]">PREMIUM DIGITAL</p>
-            </div>
+          <a href="#home" onClick={(e) => handleNavLink(e, 'home')} aria-label="חזרה לראש העמוד" className="group flex cursor-pointer items-center gap-3 rounded-xl px-2 py-1 transition hover:bg-white/5 bg-black">
+            <p className="text-sm font-black tracking-[0.25em] text-white transition group-hover:text-[#f3d9a7]">DA GROUP</p>
           </a>
 
           <nav className="hidden items-center gap-8 md:flex">
@@ -246,15 +242,14 @@ const App: React.FC = () => {
             <span className="text-[10px] font-black tracking-[0.35em] text-[#c5a059]">LUXURY WEB EXPERIENCE</span>
           </motion.div>
 
-          <motion.img
+          <motion.div
             initial={{ opacity: 0, scale: 0.92 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.1 }}
-            src={logoSrc}
-            onError={handleLogoError}
-            alt="DA Group Logo"
-            className="mt-8 h-auto w-full max-w-md rounded-2xl border border-white/10 bg-black/40 p-2"
-          />
+            className="mt-8 bg-black px-8 py-4"
+          >
+            <p className="text-2xl font-black tracking-[0.25em] text-white">DA GROUP</p>
+          </motion.div>
 
           <motion.h1
             initial={{ opacity: 0, y: 22 }}
@@ -284,7 +279,7 @@ const App: React.FC = () => {
             <a
               href="#portfolio"
               onClick={(e) => handleNavLink(e, 'portfolio')}
-              className="rounded-full bg-[#c5a059] px-8 py-4 text-xs font-black tracking-[0.28em] text-black transition hover:bg-white"
+              className="rounded-full bg-[#c5a059] px-8 py-4 text-xs font-black tracking-[0.28em] text-white transition hover:bg-white"
             >
               צפו בעבודות
             </a>
@@ -515,7 +510,7 @@ const App: React.FC = () => {
                 </div>
                 <button
                   type="submit"
-                  className="w-full rounded-lg bg-[#c5a059] px-6 py-2.5 text-xs font-black tracking-[0.2em] text-black transition hover:bg-white hover:shadow-lg"
+                  className="w-full rounded-lg bg-[#c5a059] px-6 py-2.5 text-xs font-black tracking-[0.2em] text-white transition hover:bg-white hover:shadow-lg"
                 >
                   שלח לוואטסאפ
                 </button>
@@ -541,8 +536,7 @@ const App: React.FC = () => {
 
       <footer className="relative z-10 border-t border-white/10 bg-black px-6 py-12 text-center">
         <div className="mx-auto flex w-full max-w-[1200px] flex-col items-center gap-5">
-          <img src={logoSrc} onError={handleLogoError} alt="DA Group Logo" className="h-10 w-auto rounded-md border border-white/10 bg-black/50" />
-          <p className="text-xs font-black tracking-[0.3em] text-zinc-300">DA PROJECT MANAGEMENT & ENTREPRENEURSHIP</p>
+          <p className="text-xs font-black tracking-[0.3em] text-white bg-black px-6 py-2">DA GROUP</p>
           <div className="flex items-center gap-6 text-zinc-500">
             <Zap size={18} />
             <MessageCircle size={18} />
