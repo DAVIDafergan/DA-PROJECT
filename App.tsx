@@ -147,7 +147,7 @@ const stats = [
   { label: 'זמן תגובה', value: 'עד 24 שעות' },
 ];
 
-const MAX_VISIBLE_HIGHLIGHTS = 2;
+const MAX_VISIBLE_HIGHLIGHTS = 2; // Show only 2 highlights per project for card compactness
 
 const sectionReveal = {
   hidden: { opacity: 0, y: 28 },
@@ -408,7 +408,7 @@ const App: React.FC = () => {
           viewport={{ once: true, margin: '-80px' }}
           className="mx-auto w-full max-w-[1200px] px-6 py-24"
         >
-          <p className="text-center text-[10px] font-black tracking-[0.5em] text-[#c5a059]">REFERENCE WEBSITES</p>
+          <p className="text-center text-[10px] font-black tracking-[0.5em] text-[#c5a059]">אתרי מובילים</p>
           <h2 className="mt-4 text-center text-3xl font-black md:text-5xl">אתרים מובילים שאנחנו מעריצים</h2>
           <p className="mx-auto mt-5 max-w-2xl text-center text-sm text-zinc-300">
             דוגמאות של אתרים שהשפיעו על הדרך שלנו בעיצוב וביצוע.
@@ -517,7 +517,7 @@ const App: React.FC = () => {
                   type="submit"
                   className="w-full rounded-lg bg-[#c5a059] px-6 py-2.5 text-xs font-black tracking-[0.2em] text-black transition hover:bg-white hover:shadow-lg"
                 >
-                  שלח דרך ווטסאפ
+                  שלח לוואטסאפ
                 </button>
               </form>
             ) : (
