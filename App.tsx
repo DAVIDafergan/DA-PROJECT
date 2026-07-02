@@ -279,7 +279,7 @@ const App: React.FC = () => {
             <a
               href="#portfolio"
               onClick={(e) => handleNavLink(e, 'portfolio')}
-              className="rounded-full bg-[#c5a059] px-8 py-4 text-xs font-black tracking-[0.28em] text-gray-900 transition hover:bg-white hover:text-gray-900"
+              className="rounded-full bg-[#c5a059] px-8 py-4 text-xs font-black tracking-[0.28em] text-gray-900 transition hover:bg-white"
             >
               צפו בעבודות
             </a>
@@ -510,7 +510,7 @@ const App: React.FC = () => {
                 </div>
                 <button
                   type="submit"
-                  className="w-full rounded-lg bg-[#c5a059] px-6 py-2.5 text-xs font-black tracking-[0.2em] text-gray-900 transition hover:bg-white hover:text-gray-900 hover:shadow-lg"
+                  className="w-full rounded-lg bg-[#c5a059] px-6 py-2.5 text-xs font-black tracking-[0.2em] text-gray-900 transition hover:bg-white hover:shadow-lg"
                 >
                   שלח לוואטסאפ
                 </button>
