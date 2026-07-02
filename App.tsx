@@ -206,7 +206,7 @@ const App: React.FC = () => {
 
       <header className="fixed top-0 z-50 w-full border-b border-white/10 bg-black/75 backdrop-blur-xl">
         <div className="mx-auto flex h-20 w-full max-w-[1200px] items-center justify-between px-6">
-          <a href="#home" onClick={(e) => handleNavLink(e, 'home')} aria-label="חזרה לראש העמוד" className="group flex cursor-pointer items-center px-2 py-1 transition bg-black">
+          <a href="#home" onClick={(e) => handleNavLink(e, 'home')} aria-label="חזרה לראש העמוד" className="group flex cursor-pointer items-center px-2 py-1 transition">
             <p className="text-sm font-black tracking-[0.25em] text-white transition group-hover:text-[#f3d9a7]">DA GROUP</p>
           </a>
 
@@ -279,7 +279,7 @@ const App: React.FC = () => {
             <a
               href="#portfolio"
               onClick={(e) => handleNavLink(e, 'portfolio')}
-              className="rounded-full bg-[#c5a059] px-8 py-4 text-xs font-black tracking-[0.28em] text-white transition hover:bg-white hover:text-black"
+              className="rounded-full bg-[#c5a059] px-8 py-4 text-xs font-black tracking-[0.28em] text-gray-900 transition hover:bg-white hover:text-gray-900"
             >
               צפו בעבודות
             </a>
@@ -510,7 +510,7 @@ const App: React.FC = () => {
                 </div>
                 <button
                   type="submit"
-                  className="w-full rounded-lg bg-[#c5a059] px-6 py-2.5 text-xs font-black tracking-[0.2em] text-white transition hover:bg-white hover:text-black hover:shadow-lg"
+                  className="w-full rounded-lg bg-[#c5a059] px-6 py-2.5 text-xs font-black tracking-[0.2em] text-gray-900 transition hover:bg-white hover:text-gray-900 hover:shadow-lg"
                 >
                   שלח לוואטסאפ
                 </button>
