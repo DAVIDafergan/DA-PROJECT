@@ -15,7 +15,8 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 
-const LOGO_URL = 'https://github.com/user-attachments/assets/a3d40da7-447c-4868-87b2-14861e3c26cd';
+const PRIMARY_LOGO_URL = 'https://github.com/user-attachments/assets/a3d40da7-447c-4868-87b2-14861e3c26cd';
+const FALLBACK_LOGO_URL = 'https://github.com/user-attachments/assets/43f6352a-4d02-48c9-b7ba-43ce93ea29d4';
 
 type Service = {
   title: string;
@@ -27,6 +28,7 @@ type Project = {
   title: string;
   summary: string;
   imageUrl: string;
+  imageAlt: string;
   link: string;
   highlights: string[];
 };
@@ -59,6 +61,7 @@ const projects: Project[] = [
     title: 'Nashi - תרבות נשית עירונית',
     summary: 'פלטפורמת תוכן וקהילה עם היררכיית מידע ברורה, ניווט מהיר וחוויית מובייל חלקה.',
     imageUrl: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&q=75&w=1200&fm=webp',
+    imageAlt: 'צילום מסך כהה של דף אירועים קהילתי עם כרטיסי תוכן ומבנה גריד',
     link: 'https://nashi-co.com/',
     highlights: ['ארכיטקטורת תוכן', 'UI נקי', 'ביצועים מהירים'],
   },
@@ -66,6 +69,7 @@ const projects: Project[] = [
     title: 'צפת בתנופה',
     summary: 'פורטל חדשות מקומי המציג עדכונים בזמן אמת, חוויית קריאה אלגנטית וארגון מידע נגיש.',
     imageUrl: 'https://images.unsplash.com/photo-1544013508-22284988770c?auto=format&fit=crop&q=75&w=1200&fm=webp',
+    imageAlt: 'צילום מסך של פורטל חדשות עם אזור כותרת ורשימת כתבות מרכזיות',
     link: 'https://safed-news-production.up.railway.app/',
     highlights: ['תצוגת כתבות חכמה', 'רספונסיביות מלאה', 'קלות תפעול'],
   },
@@ -73,6 +77,7 @@ const projects: Project[] = [
     title: 'מוסדות חלב חיטים',
     summary: 'מערכת ארגונית לניהול פעילות מוסדית עם תשתית יציבה וזרימת עבודה יעילה.',
     imageUrl: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=75&w=1200&fm=webp',
+    imageAlt: 'צילום מסך של ממשק ניהול ארגוני עם טבלאות נתונים ותפריט צד',
     link: 'https://www.helevhitim.com/',
     highlights: ['ניהול תהליכים', 'יציבות מערכתית', 'התאמה ארגונית'],
   },
@@ -80,6 +85,7 @@ const projects: Project[] = [
     title: 'ג׳ני שמלות כלה',
     summary: 'אתר בוטיק יוקרתי עם דגש על חוויית גלריה, תצוגה ויזואלית חזקה ושפה מותגית מדויקת.',
     imageUrl: 'https://images.unsplash.com/photo-1596433809252-260c2745dfdd?auto=format&fit=crop&q=75&w=1200&fm=webp',
+    imageAlt: 'צילום מסך של אתר אופנה עם תמונת הירו גדולה וקטלוג מוצרים',
     link: 'https://jennyskallot.com/',
     highlights: ['מיתוג יוקרתי', 'גלריות עשירות', 'קריאות לפעולה'],
   },
@@ -87,6 +93,7 @@ const projects: Project[] = [
     title: 'סטודיו לכבודה',
     summary: 'אתר תדמית מעוצב לעולם הבמה והתנועה, עם קומפוזיציה נקייה והצגת תוכן מדויקת.',
     imageUrl: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=75&w=1200&fm=webp',
+    imageAlt: 'צילום מסך של אתר סטודיו עם גלריית תמונות ותוכן תדמיתי מוביל',
     link: 'https://lichvoda.co.il/',
     highlights: ['שפה אמנותית', 'UX ממוקד', 'תצוגת מדיה נקייה'],
   },
@@ -94,6 +101,7 @@ const projects: Project[] = [
     title: 'LiveRaise Production',
     summary: 'מערכת רתימה בזמן אמת לקמפיינים, עם תצוגה דינמית ורמת אמינות גבוהה.',
     imageUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=75&w=1200&fm=webp',
+    imageAlt: 'צילום מסך של דשבורד תרומות בזמן אמת עם מדדים וגרפים חיים',
     link: 'https://liveraise-production.up.railway.app/',
     highlights: ['Real-time', 'דשבורדים חיים', 'ביצועי עומס'],
   },
@@ -112,6 +120,7 @@ const sectionReveal = {
 };
 
 const App: React.FC = () => {
+  const [logoSrc, setLogoSrc] = useState(PRIMARY_LOGO_URL);
   const [contactName, setContactName] = useState('');
   const [contactPhone, setContactPhone] = useState('');
   const [contactMessage, setContactMessage] = useState('');
@@ -125,10 +134,21 @@ const App: React.FC = () => {
   const scrollToSection = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
+  const handleNavLink = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    e.preventDefault();
+    scrollToSection(id);
+  };
+  const handleLogoError = () => {
+    setLogoSrc((current) => (current === FALLBACK_LOGO_URL ? current : FALLBACK_LOGO_URL));
+  };
+  const sanitizeField = (value: string) => value.replace(/[\r\n*]/g, ' ').trim();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const text = `*פנייה חדשה מאתר DA*\n\n*שם:* ${contactName}\n*טלפון:* ${contactPhone}\n*תיאור הפרויקט:* ${contactMessage}`;
+    const safeName = sanitizeField(contactName);
+    const safePhone = sanitizeField(contactPhone);
+    const safeMessage = sanitizeField(contactMessage);
+    const text = `*פנייה חדשה מאתר DA*\n\n*שם:* ${safeName}\n*טלפון:* ${safePhone}\n*תיאור הפרויקט:* ${safeMessage}`;
     window.open(`https://wa.me/972556674329?text=${encodeURIComponent(text)}`, '_blank');
     setIsFormSubmitted(true);
   };
@@ -151,13 +171,13 @@ const App: React.FC = () => {
 
       <header className="fixed top-0 z-50 w-full border-b border-white/10 bg-black/75 backdrop-blur-xl">
         <div className="mx-auto flex h-20 w-full max-w-[1200px] items-center justify-between px-6">
-          <button onClick={() => scrollToSection('home')} className="flex items-center gap-3">
-            <img src={LOGO_URL} alt="DA logo" className="h-10 w-auto rounded-md border border-white/15 bg-black/50 object-cover" />
+          <a href="#home" onClick={(e) => handleNavLink(e, 'home')} aria-label="חזרה לראש העמוד" className="group flex cursor-pointer items-center gap-3 rounded-xl px-2 py-1 transition hover:bg-white/5">
+            <img src={logoSrc} onError={handleLogoError} alt="DA Group Logo" className="h-10 w-auto rounded-md border border-white/15 bg-black/50 object-contain" />
             <div className="text-right">
-              <p className="text-sm font-black tracking-[0.25em] text-white">DA GROUP</p>
+              <p className="text-sm font-black tracking-[0.25em] text-white transition group-hover:text-[#f3d9a7]">DA GROUP</p>
               <p className="text-[10px] font-bold tracking-[0.32em] text-[#c5a059]">PREMIUM DIGITAL</p>
             </div>
-          </button>
+          </a>
 
           <nav className="hidden items-center gap-8 md:flex">
             {[
@@ -165,13 +185,14 @@ const App: React.FC = () => {
               ['portfolio', 'עבודות'],
               ['contact', 'יצירת קשר'],
             ].map(([id, title]) => (
-              <button
+              <a
                 key={id}
-                onClick={() => scrollToSection(id)}
+                href={`#${id}`}
+                onClick={(e) => handleNavLink(e, id)}
                 className="text-xs font-black tracking-[0.3em] text-zinc-200 transition hover:text-[#c5a059]"
               >
                 {title}
-              </button>
+              </a>
             ))}
           </nav>
         </div>
@@ -193,8 +214,9 @@ const App: React.FC = () => {
             initial={{ opacity: 0, scale: 0.92 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.1 }}
-            src={LOGO_URL}
-            alt="DA"
+            src={logoSrc}
+            onError={handleLogoError}
+            alt="DA Group Logo"
             className="mt-8 h-auto w-full max-w-md rounded-2xl border border-white/10 bg-black/40 p-2"
           />
 
@@ -202,7 +224,7 @@ const App: React.FC = () => {
             initial={{ opacity: 0, y: 22 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="mt-8 max-w-4xl text-4xl font-black leading-tight md:text-7xl"
+            className="mt-8 max-w-4xl text-4xl font-black leading-[1.1] md:text-6xl"
           >
             עיצוב שחור יוקרתי, מהיר וחלק
             <span className="mt-2 block text-[#c5a059]">שגורם למותג שלכם להיראות כמו ליגה אחרת</span>
@@ -223,18 +245,20 @@ const App: React.FC = () => {
             transition={{ duration: 0.8, delay: 0.45 }}
             className="mt-10 flex flex-wrap items-center justify-center gap-4"
           >
-            <button
-              onClick={() => scrollToSection('portfolio')}
+            <a
+              href="#portfolio"
+              onClick={(e) => handleNavLink(e, 'portfolio')}
               className="rounded-full bg-[#c5a059] px-8 py-4 text-xs font-black tracking-[0.28em] text-black transition hover:bg-white"
             >
               צפו בעבודות
-            </button>
-            <button
-              onClick={() => scrollToSection('contact')}
+            </a>
+            <a
+              href="#contact"
+              onClick={(e) => handleNavLink(e, 'contact')}
               className="rounded-full border border-white/25 bg-white/5 px-8 py-4 text-xs font-black tracking-[0.28em] text-white transition hover:border-[#c5a059] hover:text-[#c5a059]"
             >
               נתחיל פרויקט
-            </button>
+            </a>
           </motion.div>
 
           <div className="mt-16 grid w-full grid-cols-2 gap-4 md:grid-cols-4">
@@ -311,7 +335,7 @@ const App: React.FC = () => {
                   <div className="relative h-64 overflow-hidden">
                     <img
                       src={project.imageUrl}
-                      alt={project.title}
+                      alt={project.imageAlt}
                       loading="lazy"
                       className="h-full w-full object-cover brightness-75 transition duration-700 group-hover:scale-105 group-hover:brightness-95"
                     />
@@ -353,11 +377,11 @@ const App: React.FC = () => {
             </p>
 
             <div className="mt-10 space-y-5">
-              <a href="tel:0556674329" className="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/5 p-4">
+              <a href="tel:0556674329" aria-label="התקשר למספר 055-667-4329" className="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/5 p-4">
                 <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#c5a059] text-black"><Phone size={18} /></span>
                 <span className="font-bold">055-667-4329</span>
               </a>
-              <a href="mailto:DA@101.ORG.IL" className="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/5 p-4">
+              <a href="mailto:DA@101.ORG.IL" aria-label="שלח מייל לכתובת DA@101.ORG.IL" className="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/5 p-4">
                 <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white text-black"><Mail size={18} /></span>
                 <span className="font-bold">DA@101.ORG.IL</span>
               </a>
@@ -427,7 +451,7 @@ const App: React.FC = () => {
 
       <footer className="relative z-10 border-t border-white/10 bg-black px-6 py-12 text-center">
         <div className="mx-auto flex w-full max-w-[1200px] flex-col items-center gap-5">
-          <img src={LOGO_URL} alt="DA" className="h-10 w-auto rounded-md border border-white/10 bg-black/50" />
+          <img src={logoSrc} onError={handleLogoError} alt="DA Group Logo" className="h-10 w-auto rounded-md border border-white/10 bg-black/50" />
           <p className="text-xs font-black tracking-[0.3em] text-zinc-300">DA PROJECT MANAGEMENT & ENTREPRENEURSHIP</p>
           <div className="flex items-center gap-6 text-zinc-500">
             <Zap size={18} />
