@@ -147,6 +147,8 @@ const stats = [
   { label: 'זמן תגובה', value: 'עד 24 שעות' },
 ];
 
+const MAX_VISIBLE_HIGHLIGHTS = 2;
+
 const sectionReveal = {
   hidden: { opacity: 0, y: 28 },
   show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } },
@@ -270,7 +272,7 @@ const App: React.FC = () => {
             transition={{ duration: 0.8, delay: 0.35 }}
             className="mt-6 max-w-3xl text-base leading-relaxed text-zinc-200 md:text-lg"
           >
-            אנחנו יוצרים חוויה דיגיטלית מהיסוד: עיצוב שחור מעוקל, תנועה אלגנטית, וביצועים גבוהים שמעמידים את המותג שלך בקטגוריה אחרת.
+            אנחנו יוצרים חוויה דיגיטלית מהיסוד: עיצוב שחור מעודן, תנועה אלגנטית, וביצועים גבוהים שמעמידים את המותג שלך בקטגוריה אחרת.
           </motion.p>
 
           <motion.div
@@ -353,7 +355,7 @@ const App: React.FC = () => {
             <p className="text-center text-[10px] font-black tracking-[0.5em] text-[#c5a059]">PORTFOLIO</p>
             <h2 className="mt-4 text-center text-3xl font-black md:text-5xl">עבודות קודמות</h2>
             <p className="mx-auto mt-5 max-w-2xl text-center text-sm text-zinc-300">
-              כל פרויקט - תוכן ברור, סיפור מדויק וקישור ישיר למצע הווב.
+              כל פרויקט - תוכן ברור, סיפור מדויק וקישור ישיר לאתר החי.
             </p>
 
             <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -382,7 +384,7 @@ const App: React.FC = () => {
                     <h3 className="text-base font-black leading-tight group-hover:text-[#c5a059] transition">{project.title}</h3>
                     <p className="mt-2 text-xs text-zinc-400 line-clamp-2">{project.summary}</p>
                     <ul className="mt-3 flex flex-wrap gap-1.5">
-                      {project.highlights.slice(0, 2).map((item) => (
+                      {project.highlights.slice(0, MAX_VISIBLE_HIGHLIGHTS).map((item) => (
                         <li key={item} className="rounded-full border border-[#c5a059]/30 bg-[#c5a059]/8 px-2.5 py-0.5 text-[10px] font-bold text-[#f3d9a7]">
                           {item}
                         </li>
@@ -515,7 +517,7 @@ const App: React.FC = () => {
                   type="submit"
                   className="w-full rounded-lg bg-[#c5a059] px-6 py-2.5 text-xs font-black tracking-[0.2em] text-black transition hover:bg-white hover:shadow-lg"
                 >
-                  שלח לוואטסאפ
+                  שלח דרך ווטסאפ
                 </button>
               </form>
             ) : (
