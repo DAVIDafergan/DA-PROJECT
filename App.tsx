@@ -12,6 +12,7 @@ import {
   Sparkles,
   Trello,
   Zap,
+  ExternalLink,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -33,25 +34,33 @@ type Project = {
   highlights: string[];
 };
 
+type ReferenceWebsite = {
+  name: string;
+  description: string;
+  link: string;
+  imageUrl: string;
+  category: string;
+};
+
 const services: Service[] = [
   {
     title: 'אתרי פרימיום ומערכות מותאמות',
-    description: 'תכנון ופיתוח אתרים ומערכות ברמת ביצוע גבוהה במיוחד, עם חוויית משתמש חדה ויציבה מלאה.',
+    description: 'תכנון ופיתוח אתרים ומערכות ברמת ביצוע גבוהה במיוחד.',
     icon: Globe,
   },
   {
-    title: 'חנויות אונליין שמייצרות מכירות',
-    description: 'עיצוב ופיתוח חנויות יוקרתיות שמבליטות את המותג, מחזקות אמון ומגדילות את יחס ההמרה.',
+    title: 'חנויות אונליין יוקרתיות',
+    description: 'עיצוב חנויות שמבליטות את המותג ומגדילות מכירות.',
     icon: ShoppingBag,
   },
   {
-    title: 'ניהול פרויקטים ושיווק ביצועי',
-    description: 'ליווי מקצה לקצה: אסטרטגיה, ניהול תהליכים, שליטה בזמנים ותוצאה עסקית ברורה.',
+    title: 'ניהול פרויקטים וביצוע',
+    description: 'ליווי מקצה לקצה עם אסטרטגיה וניהול תהליכים מדויק.',
     icon: Trello,
   },
   {
     title: 'קמפיינים וגיוס קהילות',
-    description: 'מהלך קריאייטיב מלא לגיוס המונים ובניית נוכחות דיגיטלית עם מסר חד וקצב התקדמות מהיר.',
+    description: 'גיוס המונים ובניית נוכחות דיגיטלית עם מסר חד.',
     icon: HeartHandshake,
   },
 ];
@@ -59,51 +68,75 @@ const services: Service[] = [
 const projects: Project[] = [
   {
     title: 'Nashi - תרבות נשית עירונית',
-    summary: 'פלטפורמת תוכן וקהילה עם היררכיית מידע ברורה, ניווט מהיר וחוויית מובייל חלקה.',
+    summary: 'פלטפורמת קהילה עם תוכן מעולה וניווט מהיר',
     imageUrl: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?auto=format&fit=crop&q=75&w=1200&fm=webp',
-    imageAlt: 'צילום מסך כהה של דף אירועים קהילתי עם כרטיסי תוכן ומבנה גריד',
+    imageAlt: 'צילום מסך כהה של דף קהילתי',
     link: 'https://nashi-co.com/',
     highlights: ['ארכיטקטורת תוכן', 'UI נקי', 'ביצועים מהירים'],
   },
   {
     title: 'צפת בתנופה',
-    summary: 'פורטל חדשות מקומי המציג עדכונים בזמן אמת, חוויית קריאה אלגנטית וארגון מידע נגיש.',
+    summary: 'פורטל חדשות מקומי עם עדכונים בזמן אמת',
     imageUrl: 'https://images.unsplash.com/photo-1544013508-22284988770c?auto=format&fit=crop&q=75&w=1200&fm=webp',
-    imageAlt: 'צילום מסך של פורטל חדשות עם אזור כותרת ורשימת כתבות מרכזיות',
-    link: 'https://safed-news-production.up.railway.app/',
-    highlights: ['תצוגת כתבות חכמה', 'רספונסיביות מלאה', 'קלות תפעול'],
+    imageAlt: 'צילום מסך של פורטל חדשות',
+    link: 'https://zfatbitnufa.com/',
+    highlights: ['תצוגת כתבות', 'רספונסיביות', 'קלות תפעול'],
   },
   {
     title: 'מוסדות חלב חיטים',
-    summary: 'מערכת ארגונית לניהול פעילות מוסדית עם תשתית יציבה וזרימת עבודה יעילה.',
+    summary: 'מערכת ארגונית לניהול פעילות',
     imageUrl: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=75&w=1200&fm=webp',
-    imageAlt: 'צילום מסך של ממשק ניהול ארגוני עם טבלאות נתונים ותפריט צד',
+    imageAlt: 'צילום מסך של ממשק ניהול',
     link: 'https://www.helevhitim.com/',
-    highlights: ['ניהול תהליכים', 'יציבות מערכתית', 'התאמה ארגונית'],
+    highlights: ['ניהול תהליכים', 'יציבות מערכתית', 'התאמה'],
   },
   {
     title: 'ג׳ני שמלות כלה',
-    summary: 'אתר בוטיק יוקרתי עם דגש על חוויית גלריה, תצוגה ויזואלית חזקה ושפה מותגית מדויקת.',
+    summary: 'אתר בוטיק יוקרתי עם גלריה חזקה',
     imageUrl: 'https://images.unsplash.com/photo-1596433809252-260c2745dfdd?auto=format&fit=crop&q=75&w=1200&fm=webp',
-    imageAlt: 'צילום מסך של אתר אופנה עם תמונת הירו גדולה וקטלוג מוצרים',
+    imageAlt: 'צילום מסך של אתר אופנה',
     link: 'https://jennyskallot.com/',
     highlights: ['מיתוג יוקרתי', 'גלריות עשירות', 'קריאות לפעולה'],
   },
   {
     title: 'סטודיו לכבודה',
-    summary: 'אתר תדמית מעוצב לעולם הבמה והתנועה, עם קומפוזיציה נקייה והצגת תוכן מדויקת.',
+    summary: 'אתר תדמית לעולם הבמה והתנועה',
     imageUrl: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=75&w=1200&fm=webp',
-    imageAlt: 'צילום מסך של אתר סטודיו עם גלריית תמונות ותוכן תדמיתי מוביל',
+    imageAlt: 'צילום מסך של אתר סטודיו',
     link: 'https://lichvoda.co.il/',
-    highlights: ['שפה אמנותית', 'UX ממוקד', 'תצוגת מדיה נקייה'],
+    highlights: ['שפה אמנותית', 'UX ממוקד', 'תצוגת מדיה'],
   },
   {
     title: 'LiveRaise Production',
-    summary: 'מערכת רתימה בזמן אמת לקמפיינים, עם תצוגה דינמית ורמת אמינות גבוהה.',
+    summary: 'מערכת רתימה בזמן אמת לקמפיינים',
     imageUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=75&w=1200&fm=webp',
-    imageAlt: 'צילום מסך של דשבורד תרומות בזמן אמת עם מדדים וגרפים חיים',
+    imageAlt: 'צילום מסך של דשבורד',
     link: 'https://liveraise-production.up.railway.app/',
     highlights: ['Real-time', 'דשבורדים חיים', 'ביצועי עומס'],
+  },
+];
+
+const referenceWebsites: ReferenceWebsite[] = [
+  {
+    name: 'צפת בתנופה',
+    description: 'פורטל חדשות מקומי עם תנועה ותוכן טרי',
+    category: 'חדשות ותוכן',
+    link: 'https://zfatbitnufa.com/',
+    imageUrl: 'https://images.unsplash.com/photo-1590080876-a96b9fe0d5ff?auto=format&fit=crop&q=75&w=800&fm=webp',
+  },
+  {
+    name: 'דילים',
+    description: 'פלטפורמה לגיוס קרנות ועסקאות בתנופה',
+    category: 'עסקים וקרנות',
+    link: 'https://dealim.org/',
+    imageUrl: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&q=75&w=800&fm=webp',
+  },
+  {
+    name: 'חותם',
+    description: 'חנות מקוונת לאביזרים ומוצרי יוקרה',
+    category: 'קנייה אונליין',
+    link: 'https://www.hotam.shop/',
+    imageUrl: 'https://images.unsplash.com/photo-1556656793-08538906a9f8?auto=format&fit=crop&q=75&w=800&fm=webp',
   },
 ];
 
@@ -113,6 +146,8 @@ const stats = [
   { label: 'לקוחות חוזרים', value: '93%' },
   { label: 'זמן תגובה', value: 'עד 24 שעות' },
 ];
+
+const MAX_VISIBLE_HIGHLIGHTS = 2; // Show only 2 highlights per project for card compactness
 
 const sectionReveal = {
   hidden: { opacity: 0, y: 28 },
@@ -183,6 +218,7 @@ const App: React.FC = () => {
             {[
               ['services', 'שירותים'],
               ['portfolio', 'עבודות'],
+              ['reference', 'אתרים מובילים'],
               ['contact', 'יצירת קשר'],
             ].map(([id, title]) => (
               <a
@@ -226,17 +262,17 @@ const App: React.FC = () => {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="mt-8 max-w-4xl text-4xl font-black leading-[1.1] md:text-6xl"
           >
-            עיצוב שחור יוקרתי, מהיר וחלק
-            <span className="mt-2 block text-[#c5a059]">שגורם למותג שלכם להיראות כמו ליגה אחרת</span>
+            עיצוב שחור יוקרתי, תנועה חלקה וביצועים מדהימים
+            <span className="mt-3 block text-[#c5a059]">לעסק שלך</span>
           </motion.h1>
 
           <motion.p
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.35 }}
-            className="mt-6 max-w-3xl text-base leading-relaxed text-zinc-200 md:text-2xl"
+            className="mt-6 max-w-3xl text-base leading-relaxed text-zinc-200 md:text-lg"
           >
-            אנחנו מתכננים חוויה דיגיטלית מחדש מהיסוד: שפה ויזואלית חזקה, תנועה אלגנטית וביצועים גבוהים, כדי שכל לקוח יבין מיד שאתם ברמה אחרת.
+            אנחנו יוצרים חוויה דיגיטלית מהיסוד: עיצוב שחור מעודן, תנועה אלגנטית, וביצועים גבוהים שמעמידים את המותג שלך בקטגוריה אחרת.
           </motion.p>
 
           <motion.div
@@ -280,24 +316,27 @@ const App: React.FC = () => {
           className="mx-auto w-full max-w-[1200px] px-6 py-24"
         >
           <p className="text-center text-[10px] font-black tracking-[0.5em] text-[#c5a059]">SERVICES</p>
-          <h2 className="mt-4 text-center text-3xl font-black md:text-6xl">פתרונות שמייצרים נוכחות ותוצאות</h2>
-          <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2">
+          <h2 className="mt-4 text-center text-3xl font-black md:text-5xl">שירותים שמייצרים תוצאות</h2>
+          <div className="mt-14 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
             {services.map((service, idx) => {
               const Icon = service.icon;
               return (
                 <motion.article
                   key={service.title}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 18 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: idx * 0.08 }}
-                  className="rounded-3xl border border-white/10 bg-[#0d0d0d]/85 p-8"
+                  transition={{ delay: idx * 0.06 }}
+                  className="group relative overflow-hidden rounded-2xl border border-white/10 bg-[#0a0a0b]/60 p-6 backdrop-blur transition hover:border-[#c5a059]/50 hover:bg-[#0f0f11]/80"
                 >
-                  <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-[#c5a059]/15 text-[#c5a059]">
-                    <Icon size={24} />
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#c5a059]/5 via-transparent to-transparent opacity-0 transition group-hover:opacity-100" />
+                  <div className="relative z-10">
+                    <div className="mb-4 inline-flex h-10 w-10 items-center justify-center rounded-lg bg-[#c5a059]/15 text-[#c5a059] transition group-hover:bg-[#c5a059]/25">
+                      <Icon size={20} />
+                    </div>
+                    <h3 className="text-base font-black leading-tight">{service.title}</h3>
+                    <p className="mt-3 text-sm text-zinc-300 leading-relaxed">{service.description}</p>
                   </div>
-                  <h3 className="text-2xl font-black">{service.title}</h3>
-                  <p className="mt-4 text-zinc-300">{service.description}</p>
                 </motion.article>
               );
             })}
@@ -310,54 +349,105 @@ const App: React.FC = () => {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, margin: '-80px' }}
-          className="bg-black/45 px-6 py-24"
+          className="bg-black/30 px-6 py-24"
         >
           <div className="mx-auto w-full max-w-[1280px]">
             <p className="text-center text-[10px] font-black tracking-[0.5em] text-[#c5a059]">PORTFOLIO</p>
-            <h2 className="mt-4 text-center text-3xl font-black md:text-6xl">העבודות שלנו מוצגות ברור ומדויק</h2>
-            <p className="mx-auto mt-5 max-w-3xl text-center text-zinc-300 md:text-xl">
-              כל פרויקט מוצג עם סיפור קצר, חוזקות מרכזיות וקישור ישיר לצפייה — בלי עומס ובלי רעש מיותר.
+            <h2 className="mt-4 text-center text-3xl font-black md:text-5xl">עבודות קודמות</h2>
+            <p className="mx-auto mt-5 max-w-2xl text-center text-sm text-zinc-300">
+              כל פרויקט - תוכן ברור, סיפור מדויק וקישור ישיר לאתר החי.
             </p>
 
-            <div className="mt-14 grid grid-cols-1 gap-8 md:grid-cols-2">
+            <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
               {projects.map((project, idx) => (
                 <motion.a
                   key={project.title}
                   href={project.link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  initial={{ opacity: 0, y: 22 }}
+                  initial={{ opacity: 0, y: 18 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: idx * 0.06 }}
-                  className="group overflow-hidden rounded-3xl border border-white/10 bg-[#090909]"
+                  transition={{ delay: idx * 0.05 }}
+                  className="group relative overflow-hidden rounded-2xl border border-white/10 bg-[#060606]/80 transition hover:border-[#c5a059]/40"
                 >
-                  <div className="relative h-64 overflow-hidden">
+                  <div className="relative h-48 overflow-hidden bg-black/50">
                     <img
                       src={project.imageUrl}
                       alt={project.imageAlt}
                       loading="lazy"
-                      className="h-full w-full object-cover brightness-75 transition duration-700 group-hover:scale-105 group-hover:brightness-95"
+                      className="h-full w-full object-cover brightness-60 transition duration-700 group-hover:scale-110 group-hover:brightness-80"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/25 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
                   </div>
-                  <div className="p-7">
-                    <h3 className="text-2xl font-black">{project.title}</h3>
-                    <p className="mt-3 text-zinc-300">{project.summary}</p>
-                    <ul className="mt-4 flex flex-wrap gap-2">
-                      {project.highlights.map((item) => (
-                        <li key={item} className="rounded-full border border-[#c5a059]/40 bg-[#c5a059]/10 px-3 py-1 text-xs font-bold text-[#f3d9a7]">
+                  <div className="p-5">
+                    <h3 className="text-base font-black leading-tight group-hover:text-[#c5a059] transition">{project.title}</h3>
+                    <p className="mt-2 text-xs text-zinc-400 line-clamp-2">{project.summary}</p>
+                    <ul className="mt-3 flex flex-wrap gap-1.5">
+                      {project.highlights.slice(0, MAX_VISIBLE_HIGHLIGHTS).map((item) => (
+                        <li key={item} className="rounded-full border border-[#c5a059]/30 bg-[#c5a059]/8 px-2.5 py-0.5 text-[10px] font-bold text-[#f3d9a7]">
                           {item}
                         </li>
                       ))}
                     </ul>
-                    <div className="mt-6 inline-flex items-center gap-2 text-sm font-black text-[#c5a059]">
-                      לצפייה בפרויקט <ArrowUpRight size={16} />
+                    <div className="mt-3 inline-flex items-center gap-1 text-xs font-black text-[#c5a059] opacity-0 transition group-hover:opacity-100">
+                      לצפייה <ArrowUpRight size={12} />
                     </div>
                   </div>
                 </motion.a>
               ))}
             </div>
+          </div>
+        </motion.section>
+
+        <motion.section
+          id="reference"
+          variants={sectionReveal}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: '-80px' }}
+          className="mx-auto w-full max-w-[1200px] px-6 py-24"
+        >
+          <p className="text-center text-[10px] font-black tracking-[0.5em] text-[#c5a059]">אתרי מובילים</p>
+          <h2 className="mt-4 text-center text-3xl font-black md:text-5xl">אתרים מובילים שאנחנו מעריצים</h2>
+          <p className="mx-auto mt-5 max-w-2xl text-center text-sm text-zinc-300">
+            דוגמאות של אתרים שהשפיעו על הדרך שלנו בעיצוב וביצוע.
+          </p>
+
+          <div className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-3">
+            {referenceWebsites.map((site, idx) => (
+              <motion.a
+                key={site.name}
+                href={site.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.08 }}
+                className="group relative overflow-hidden rounded-2xl border border-white/10 bg-[#0a0a0c]/70 transition hover:border-[#c5a059]/40 hover:bg-[#0f0f13]/90"
+              >
+                <div className="relative h-40 overflow-hidden bg-gradient-to-br from-black/50 to-black">
+                  <img
+                    src={site.imageUrl}
+                    alt={site.name}
+                    loading="lazy"
+                    className="h-full w-full object-cover brightness-50 transition duration-700 group-hover:scale-110 group-hover:brightness-70"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
+                </div>
+                <div className="p-5">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1">
+                      <h3 className="text-base font-black leading-tight group-hover:text-[#c5a059] transition">{site.name}</h3>
+                      <span className="mt-1 inline-block text-[10px] font-bold text-[#c5a059]/70">{site.category}</span>
+                    </div>
+                    <ExternalLink size={14} className="text-[#c5a059] opacity-0 transition group-hover:opacity-100" />
+                  </div>
+                  <p className="mt-2 text-xs text-zinc-400 line-clamp-2">{site.description}</p>
+                </div>
+              </motion.a>
+            ))}
           </div>
         </motion.section>
 
@@ -371,33 +461,33 @@ const App: React.FC = () => {
         >
           <div>
             <p className="text-[10px] font-black tracking-[0.5em] text-[#c5a059]">CONTACT</p>
-            <h2 className="mt-4 text-4xl font-black leading-tight md:text-6xl">בואו נהפוך את הנוכחות הדיגיטלית שלכם לנכס אמיתי</h2>
-            <p className="mt-6 text-zinc-300 md:text-xl">
-              משאירים פרטים, מקבלים שיחת אסטרטגיה ממוקדת, ומתקדמים לפתרון שנבנה בדיוק לעסק שלכם.
+            <h2 className="mt-4 text-3xl font-black leading-tight md:text-5xl">בואו נבנה משהו מיוחד</h2>
+            <p className="mt-6 text-sm text-zinc-300">
+              השארו פרטים, נצור איתכם קשר ונבנה את הפתרון המושלם לעסק שלכם.
             </p>
 
-            <div className="mt-10 space-y-5">
-              <a href="tel:0556674329" aria-label="התקשר למספר 055-667-4329" className="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/5 p-4">
-                <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#c5a059] text-black"><Phone size={18} /></span>
-                <span className="font-bold">055-667-4329</span>
+            <div className="mt-10 space-y-4">
+              <a href="tel:0556674329" aria-label="התקשר למספר 055-667-4329" className="group flex items-center gap-4 rounded-xl border border-white/10 bg-white/5 p-4 transition hover:bg-white/10 hover:border-[#c5a059]/40">
+                <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-[#c5a059]/20 text-[#c5a059] transition group-hover:bg-[#c5a059]/30"><Phone size={16} /></span>
+                <span className="text-sm font-bold">055-667-4329</span>
               </a>
-              <a href="mailto:DA@101.ORG.IL" aria-label="שלח מייל לכתובת DA@101.ORG.IL" className="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/5 p-4">
-                <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white text-black"><Mail size={18} /></span>
-                <span className="font-bold">DA@101.ORG.IL</span>
+              <a href="mailto:DA@101.ORG.IL" aria-label="שלח מייל לכתובת DA@101.ORG.IL" className="group flex items-center gap-4 rounded-xl border border-white/10 bg-white/5 p-4 transition hover:bg-white/10 hover:border-[#c5a059]/40">
+                <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-[#c5a059]/20 text-[#c5a059] transition group-hover:bg-[#c5a059]/30"><Mail size={16} /></span>
+                <span className="text-sm font-bold">DA@101.ORG.IL</span>
               </a>
             </div>
           </div>
 
-          <div className="rounded-3xl border border-white/10 bg-[#0b0b0b]/90 p-8">
+          <div className="rounded-2xl border border-white/10 bg-[#0b0b0d]/80 p-7 backdrop-blur">
             {!isFormSubmitted ? (
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-5">
                 <div>
                   <label className="mb-2 block text-xs font-black tracking-[0.25em] text-zinc-400">שם מלא</label>
                   <input
                     value={contactName}
                     onChange={(e) => setContactName(e.target.value)}
                     required
-                    className="w-full rounded-xl border border-white/15 bg-black/40 px-4 py-3 text-white outline-none transition focus:border-[#c5a059]"
+                    className="w-full rounded-lg border border-white/15 bg-black/40 px-4 py-2.5 text-sm text-white outline-none transition focus:border-[#c5a059]"
                     placeholder="דוד אפרגן"
                   />
                 </div>
@@ -408,38 +498,38 @@ const App: React.FC = () => {
                     value={contactPhone}
                     onChange={(e) => setContactPhone(e.target.value)}
                     required
-                    className="w-full rounded-xl border border-white/15 bg-black/40 px-4 py-3 text-white outline-none transition focus:border-[#c5a059]"
+                    className="w-full rounded-lg border border-white/15 bg-black/40 px-4 py-2.5 text-sm text-white outline-none transition focus:border-[#c5a059]"
                     placeholder="050-000-0000"
                   />
                 </div>
                 <div>
-                  <label className="mb-2 block text-xs font-black tracking-[0.25em] text-zinc-400">ספרו לנו על העסק</label>
+                  <label className="mb-2 block text-xs font-black tracking-[0.25em] text-zinc-400">תיאור הפרויקט</label>
                   <textarea
                     value={contactMessage}
                     onChange={(e) => setContactMessage(e.target.value)}
                     required
-                    rows={5}
-                    className="w-full resize-none rounded-xl border border-white/15 bg-black/40 px-4 py-3 text-white outline-none transition focus:border-[#c5a059]"
-                    placeholder="מה המטרות שלכם? איזה סוג אתר או מערכת אתם רוצים?"
+                    rows={4}
+                    className="w-full resize-none rounded-lg border border-white/15 bg-black/40 px-4 py-2.5 text-sm text-white outline-none transition focus:border-[#c5a059]"
+                    placeholder="מה המטרות שלכם?"
                   />
                 </div>
                 <button
                   type="submit"
-                  className="w-full rounded-full bg-[#c5a059] px-6 py-4 text-sm font-black tracking-[0.25em] text-black transition hover:bg-white"
+                  className="w-full rounded-lg bg-[#c5a059] px-6 py-2.5 text-xs font-black tracking-[0.2em] text-black transition hover:bg-white hover:shadow-lg"
                 >
-                  שליחה לוואטסאפ
+                  שלח לוואטסאפ
                 </button>
               </form>
             ) : (
-              <div className="py-12 text-center">
-                <div className="mx-auto inline-flex h-16 w-16 items-center justify-center rounded-full border border-[#c5a059]/50 bg-[#c5a059]/15 text-[#c5a059]">
-                  <CheckCircle2 size={34} />
+              <div className="py-10 text-center">
+                <div className="mx-auto inline-flex h-14 w-14 items-center justify-center rounded-full border border-[#c5a059]/50 bg-[#c5a059]/15 text-[#c5a059]">
+                  <CheckCircle2 size={28} />
                 </div>
-                <h3 className="mt-6 text-2xl font-black">הפנייה נשלחה בהצלחה</h3>
-                <p className="mt-3 text-zinc-300">ניצור איתכם קשר בהקדם ונבנה יחד את השלב הבא.</p>
+                <h3 className="mt-5 text-xl font-black">נשלח בהצלחה!</h3>
+                <p className="mt-2 text-xs text-zinc-400">ניצור איתכם קשר בהקדם ביותר.</p>
                 <button
                   onClick={() => setIsFormSubmitted(false)}
-                  className="mt-8 text-sm font-bold text-[#c5a059] underline underline-offset-4"
+                  className="mt-6 text-xs font-bold text-[#c5a059] underline underline-offset-2"
                 >
                   לשלוח פנייה נוספת
                 </button>
