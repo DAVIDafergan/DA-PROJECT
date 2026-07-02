@@ -206,7 +206,7 @@ const App: React.FC = () => {
 
       <header className="fixed top-0 z-50 w-full border-b border-white/10 bg-black/75 backdrop-blur-xl">
         <div className="mx-auto flex h-20 w-full max-w-[1200px] items-center justify-between px-6">
-          <a href="#home" onClick={(e) => handleNavLink(e, 'home')} aria-label="חזרה לראש העמוד" className="group flex cursor-pointer items-center gap-3 px-2 py-1 transition bg-black">
+          <a href="#home" onClick={(e) => handleNavLink(e, 'home')} aria-label="חזרה לראש העמוד" className="group flex cursor-pointer items-center px-2 py-1 transition bg-black">
             <p className="text-sm font-black tracking-[0.25em] text-white transition group-hover:text-[#f3d9a7]">DA GROUP</p>
           </a>
 
@@ -536,7 +536,7 @@ const App: React.FC = () => {
 
       <footer className="relative z-10 border-t border-white/10 bg-black px-6 py-12 text-center">
         <div className="mx-auto flex w-full max-w-[1200px] flex-col items-center gap-5">
-          <p className="text-xs font-black tracking-[0.3em] text-white bg-black px-6 py-2">DA GROUP</p>
+          <p className="text-xs font-black tracking-[0.3em] text-white px-6 py-2">DA GROUP</p>
           <div className="flex items-center gap-6 text-zinc-500">
             <Zap size={18} />
             <MessageCircle size={18} />
