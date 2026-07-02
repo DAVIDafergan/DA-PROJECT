@@ -536,7 +536,7 @@ const App: React.FC = () => {
 
       <footer className="relative z-10 border-t border-white/10 bg-black px-6 py-12 text-center">
         <div className="mx-auto flex w-full max-w-[1200px] flex-col items-center gap-5">
-          <p className="text-xs font-black tracking-[0.3em] text-white px-6 py-2">DA GROUP</p>
+          <p className="px-6 py-2 text-xs font-black tracking-[0.3em] text-white">DA GROUP</p>
           <div className="flex items-center gap-6 text-zinc-500">
             <Zap size={18} />
             <MessageCircle size={18} />
